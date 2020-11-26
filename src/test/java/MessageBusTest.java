@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusTest {
 
+
     @BeforeEach
     void setUp() {
     }

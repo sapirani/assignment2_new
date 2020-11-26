@@ -7,21 +7,25 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Write your implementation here!
  * Only private fields and methods can be added to this class.
  */
-public class MessageBusImpl implements MessageBus {
+public class MessageBusImpl implements MessageBus
+{
 
 
     @Override
-    public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+    public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
+    {
 
     }
 
     @Override
-    public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+    public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m)
+    {
 
     }
 
     @Override @SuppressWarnings("unchecked")
-    public <T> void complete(Event<T> e, T result) {
+    public <T> void complete(Event<T> e, T result)
+    {
 
     }
 
@@ -38,7 +42,8 @@ public class MessageBusImpl implements MessageBus {
     }
 
     @Override
-    public void register(MicroService m) {
+    public void register(MicroService m)
+    {
 
     }
 

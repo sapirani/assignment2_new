@@ -7,6 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="assignment2" />
+        <module name="assignment2_new" />
+        <module name="spl211" />
       </profile>
     </annotationProcessing>
   </component>

@@ -13,6 +13,17 @@ import java.util.List;
  * <p>
  * You can add ONLY private methods and fields to this class.
  */
-public class Ewoks {
+public class Ewoks
+{
+    private List<Ewok> ewoks;
 
+    public Ewoks(int number_of_ewoks)
+    {
+        ewoks = new ArrayList<>(number_of_ewoks + 1);
+    }
+
+    public void addEwok(Ewok ewok)
+    {
+        ewoks.set(ewok.getSerialNumber(), ewok);
+    }
 }
