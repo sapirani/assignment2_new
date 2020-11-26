@@ -11,20 +11,48 @@ class EwokTest {
     @BeforeEach
     public void setUp()
     {
+        SerialNumber = 3;
         ewok = new Ewok(SerialNumber);
     }
 
     @Test
-    void acquire()
+    void acquireTest()
     {
-
+        assertTrue(ewok.isAvailable());
+        ewok.acquire();
+        assertFalse(ewok.isAvailable());
     }
 
     @Test
-    void release() {
+    void releaseTest()
+    {
+        ewok.acquire();
+        assertFalse(ewok.isAvailable());
+        ewok.release();
+        assertTrue(ewok.isAvailable());
     }
 
     @Test
-    void isAvailable() {
+    void isAvailableTest()
+    {
+        SerialNumber = 5;
+        ewok = new Ewok(SerialNumber);
+        assertTrue(ewok.isAvailable());
+        ewok.acquire();
+        assertFalse(ewok.isAvailable());
+        ewok.release();
+        assertTrue(ewok.isAvailable());
+    }
+
+    @Test
+    void serialNumberTest()
+    {
+        assertEquals(SerialNumber, ewok.getSerialNumber());
+        for(int i = 0; i < 10; i++)
+        {
+            SerialNumber = i;
+            ewok = new Ewok(SerialNumber);
+            assertEquals(SerialNumber, ewok.getSerialNumber());
+        }
     }
 }
