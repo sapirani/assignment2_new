@@ -8,6 +8,9 @@
  */
 public class Ewok
 {
+    private int serialNumber;
+    private boolean available;
+
     /**
      * Constructor
      */
@@ -45,7 +48,4 @@ public class Ewok
      * get the Ewok's serial number
      */
     public int getSerialNumber() { return serialNumber; }
-
-    private int serialNumber;
-    private boolean available;
 }

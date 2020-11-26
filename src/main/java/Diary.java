@@ -57,8 +57,24 @@ public class Diary
         this.LandoTerminate = landoTerminate;
     }
 
-    public void executionOutput()
+    public String executionOutput()
     {
-
+        long finish_attack = HanSoloFinish > C3POFinish ? HanSoloFinish : C3POFinish;
+        String output = "";
+        output += "There are " + totalAttacks + " attacks. \n";
+        output += "HanSolo and C3PO finish their tasks ~" + (Math.abs(HanSoloFinish - C3POFinish)) +
+                " milliseconds one after the other. \n";
+        output += "R2D2 deactivted the shield generator after ~" + R2D2Deactivate + " milliseconds. \n";
+        if(LieaTerminate == HanSoloTerminate && HanSoloTerminate == C3POTerminate && C3POTerminate == R2D2Terminate && R2D2Terminate == LandoTerminate)
+            output += "All threads terminate ~" + (HanSoloTerminate - finish_attack) + " milliseconds after.";
+        else
+        {
+            output += "Liea terminated ~" + (LieaTerminate - finish_attack) + " milliseconds after.\n" ;
+            output += "HanSolo terminated ~" + (HanSoloTerminate - LieaTerminate) + " milliseconds after Liea. \n";
+            output += "C3PO terminated ~" + (C3POTerminate - LieaTerminate) + " milliseconds after Liea. \n";
+            output += "R2D2 terminated ~" + (R2D2Terminate - LieaTerminate) + " milliseconds after Liea. \n";
+            output += "Lando terminated ~" + (LandoTerminate - R2D2Terminate) + " milliseconds after R2D2.";
+        }
+        return output;
     }
 }

@@ -5,13 +5,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusTest {
 
+    private Class<? extends Event<String>> type;
+    private MicroService micro_service;
 
     @BeforeEach
-    void setUp() {
+    void setUp()
+    {
+        micro_service = new HanSoloMicroservice();
     }
 
     @Test
-    void subscribeEvent() {
+    void subscribeEventTest()
+    {
+
     }
 
     @Test
