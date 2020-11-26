@@ -8,9 +8,14 @@
  */
 public class Ewok
 {
-    int serialNumber;
-    boolean available;
-
+    /**
+     * Constructor
+     */
+    public Ewok(int serialNumber)
+    {
+        this.serialNumber = serialNumber;
+        this.available = true;
+    }
 
     /**
      * Acquires an Ewok
@@ -35,4 +40,12 @@ public class Ewok
     {
         return available;
     }
+
+    /**
+     * get the Ewok's serial number
+     */
+    public int getSerialNumber() { return serialNumber; }
+
+    private int serialNumber;
+    private boolean available;
 }
