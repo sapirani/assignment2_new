@@ -1,4 +1,4 @@
-package bgu.spl.mics.application.passiveObjects;
+//package bgu.spl.mics.application.passiveObjects;
 
 /**
  * Passive data-object representing a forest creature summoned when HanSolo and C3PO receive AttackEvents.
@@ -33,6 +33,6 @@ public class Ewok
      */
     public boolean isAvailable()
     {
-        return available == true;
+        return available;
     }
 }
