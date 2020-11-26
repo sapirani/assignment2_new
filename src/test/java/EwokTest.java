@@ -35,8 +35,6 @@ class EwokTest {
     @Test
     void isAvailableTest()
     {
-        SerialNumber = 5;
-        ewok = new Ewok(SerialNumber);
         assertTrue(ewok.isAvailable());
         ewok.acquire();
         assertFalse(ewok.isAvailable());
