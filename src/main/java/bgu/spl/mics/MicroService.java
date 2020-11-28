@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -23,13 +25,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class MicroService implements Runnable {
 
     private String name;
+    private MessageBus messageBus;
+
+    private Dictionary<Class, Callback> handleMessage;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
-    public MicroService(String name) {
+    public MicroService(String name)
+    {
         this.name = name;
+        this.messageBus = MessageBusImpl.getInstance();
+
+        this.handleMessage = new Hashtable<>();
     }
 
     /**
@@ -55,7 +64,8 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback)
     {
-
+        this.handleMessage.put(type, callback);
+        this.messageBus.subscribeEvent(type, this);
     }
 
     /**
@@ -80,7 +90,8 @@ public abstract class MicroService implements Runnable {
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback)
     {
-
+        this.handleMessage.put(type, callback);
+        this.messageBus.subscribeBroadcast(type, this);
     }
 
     /**
@@ -97,8 +108,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T> Future<T> sendEvent(Event<T> e)
     {
-
-        return null;
+        return this.messageBus.sendEvent(e);
     }
 
     /**
@@ -107,8 +117,9 @@ public abstract class MicroService implements Runnable {
      * <p>
      * @param b The broadcast message to send
      */
-    protected final void sendBroadcast(Broadcast b) {
-
+    protected final void sendBroadcast(Broadcast b)
+    {
+        this.messageBus.sendBroadcast(b);
     }
 
     /**
@@ -121,8 +132,9 @@ public abstract class MicroService implements Runnable {
      * @param result The result to resolve the relevant Future object.
      *               {@code e}.
      */
-    protected final <T> void complete(Event<T> e, T result) {
-
+    protected final <T> void complete(Event<T> e, T result)
+    {
+        this.messageBus.complete(e,result);
     }
 
     /**
@@ -134,7 +146,8 @@ public abstract class MicroService implements Runnable {
      * Signals the event loop that it must terminate after handling the current
      * message.
      */
-    protected final void terminate() {
+    protected final void terminate()
+    {
 
     }
 
@@ -142,7 +155,8 @@ public abstract class MicroService implements Runnable {
      * @return the name of the service - the service name is given to it in the
      *         construction time and is used mainly for debugging purposes.
      */
-    public final String getName() {
+    public final String getName()
+    {
         return this.name;
     }
 
@@ -151,7 +165,18 @@ public abstract class MicroService implements Runnable {
      * otherwise you will end up in an infinite loop.
      */
     @Override
-    public final void run() {
+    public final void run()
+    {
+        // loop
+            /*Message message = null;
+            try {
+                message = this.messageBus.awaitMessage(this);
+                this.handleMessage.get(message.getClass()).call(message?); // what to send to call function
+                this.messageBus.complete((Event) message, true); // think about casting
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }*/
+
 
     }
 
