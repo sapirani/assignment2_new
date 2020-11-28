@@ -77,7 +77,7 @@ class MessageBusTest {
             sendEventTest.invoke(leia,attack); // Leia sends message from type AttackEvent
             sendEventTest.invoke(r2d2,deactivation); // R2D2 sends message from type deactivationEvent
 
-            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message shuold be from type AttackEvent
+            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
         }
         catch (Exception e)
         {
@@ -113,8 +113,8 @@ class MessageBusTest {
 
             sendBroadcastTest.invoke(lando,terminate); // Lando sends broadcast message from type Terminate
 
-            resolvedMessageLeia = messageBus.awaitMessage(leia); // Leia gets broadcast message, the message shuold be from type TerminateBroadcast
-            resolvedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 gets broadcast message, the message shuold be from type TerminateBroadcast
+            resolvedMessageLeia = messageBus.awaitMessage(leia); // Leia gets broadcast message, the message should be from type TerminateBroadcast
+            resolvedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 gets broadcast message, the message should be from type TerminateBroadcast
         }
         catch (Exception e)
         {
@@ -177,8 +177,8 @@ class MessageBusTest {
 
             sendBroadcastTest.invoke(lando,terminate); // Lando sends broadcast message from type Terminate
 
-            resolvedMessageLeia = messageBus.awaitMessage(leia); // Leia gets broadcast message, the message shuold be from type TerminateBroadcast
-            resolvedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 gets broadcast message, the message shuold be from type TerminateBroadcast
+            resolvedMessageLeia = messageBus.awaitMessage(leia); // Leia gets broadcast message, the message should be from type TerminateBroadcast
+            resolvedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 gets broadcast message, the message should be from type TerminateBroadcast
         }
         catch (Exception e)
         {
@@ -212,7 +212,7 @@ class MessageBusTest {
 
             sendEventTest.invoke(leia,attack); // Leia sends message from type AttackEvent
 
-            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message shuold be from type AttackEvent
+            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
         }
         catch (Exception e)
         {
@@ -255,15 +255,17 @@ class MessageBusTest {
         Callback<Boolean> callback = b -> {};
         try
         {
-            subscribeEventTest.invoke(c3po,AttackEvent.class, callback);
-            subscribeBroadcastTest.invoke(c3po, TerminateBroadcast.class,callback);
-            nullMessage = messageBus.awaitMessage(c3po);
+            subscribeEventTest.invoke(c3po,AttackEvent.class, callback); // C3PO subscribes to messages from type AttackEvent
+            subscribeBroadcastTest.invoke(c3po, TerminateBroadcast.class,callback); // C3PO subscribes to broadcast messages from type TerminateBroadcast
+
+            nullMessage = messageBus.awaitMessage(c3po); // c3po's queue of messages is empty, so there is no message to return from the method.
 
             sendEventTest.invoke(leia,attack); // Leia sends message from type AttackEvent
-            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message shuold be from type AttackEvent
-            sendBroadcastTest.invoke(lando, terminate);
-            resolvedBroadcastMessage = messageBus.awaitMessage(c3po);
-        } catch (Exception e)
+            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
+            sendBroadcastTest.invoke(lando, terminate); // Lando sends message from type TerminateBroadcast
+            resolvedBroadcastMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type TerminateBroadcast
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
