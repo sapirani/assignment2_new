@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import bgu.spl.mics.application.passiveObjects.Ewok;
 
-class EwokTest {
-
+class EwokTest
+{
     private Ewok ewok;
     private int SerialNumber;
 
@@ -34,19 +34,8 @@ class EwokTest {
     }
 
     @Test
-    void isAvailableTest()
-    {
-        assertTrue(ewok.isAvailable());
-        ewok.acquire();
-        assertFalse(ewok.isAvailable());
-        ewok.release();
-        assertTrue(ewok.isAvailable());
-    }
-
-    @Test
     void serialNumberTest()
     {
-        assertEquals(SerialNumber, ewok.getSerialNumber());
         for(int i = 0; i < 10; i++)
         {
             SerialNumber = i;

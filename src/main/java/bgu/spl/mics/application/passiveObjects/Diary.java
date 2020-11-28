@@ -64,7 +64,7 @@ public class Diary
         output += "There are " + totalAttacks + " attacks. \n";
         output += "HanSolo and C3PO finish their tasks ~" + (Math.abs(HanSoloFinish - C3POFinish)) +
                 " milliseconds one after the other. \n";
-        output += "R2D2 deactivted the shield generator after ~" + R2D2Deactivate + " milliseconds. \n";
+        output += "R2D2 deactivated the shield generator after ~" + R2D2Deactivate + " milliseconds. \n";
         if(LieaTerminate == HanSoloTerminate && HanSoloTerminate == C3POTerminate && C3POTerminate == R2D2Terminate && R2D2Terminate == LandoTerminate)
             output += "All threads terminate ~" + (HanSoloTerminate - finish_attack) + " milliseconds after.";
         else

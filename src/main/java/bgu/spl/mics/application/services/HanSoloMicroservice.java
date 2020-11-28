@@ -23,7 +23,6 @@ public class HanSoloMicroservice extends MicroService {
         super("Han");
     }
 
-
     @Override
     protected void initialize() {
 

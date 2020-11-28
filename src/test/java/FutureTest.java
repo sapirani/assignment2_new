@@ -1,25 +1,17 @@
-//package bgu.spl.mics;
 import bgu.spl.mics.Future;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.AfterAll;
-
 import org.junit.jupiter.api.Test;
-
 import java.util.concurrent.TimeUnit;
-
-
 import static org.junit.jupiter.api.Assertions.*;
 
-
-public class FutureTest {
-
+public class FutureTest
+{
     private Future<String> future;
     private String result;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp()
+    {
         future = new Future<>();
         result = "result";
     }

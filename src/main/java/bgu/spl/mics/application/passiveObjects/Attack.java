@@ -2,7 +2,6 @@ package bgu.spl.mics.application.passiveObjects;
 
 import java.util.List;
 
-
 /**
  * Passive data-object representing an attack object.
  * You must not alter any of the given public methods of this class.

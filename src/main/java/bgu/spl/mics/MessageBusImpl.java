@@ -12,16 +12,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MessageBusImpl implements MessageBus
 {
     private static MessageBus messageBus = null;
-    private Dictionary<MicroService, Queue<Message>> microServicesMessages;
-    private Dictionary<Event, Future> eventsAndFutures;
-    private Dictionary<Class<? extends Message> , List<MicroService>> subscribeMicroservice;
+    private HashMap<MicroService, Queue<Message>> microServicesMessages;
+    private HashMap<Event, Future> eventsAndFutures;
+    private HashMap<Class<? extends Message> , List<MicroService>> subscribeMicroservice;
 
     private MessageBusImpl()
     {
         // init
-        this.microServicesMessages = new Hashtable<>();
-        this.eventsAndFutures = new Hashtable<>();
-        this.subscribeMicroservice = new Hashtable<>();
+        this.microServicesMessages = new HashMap<>();
+        this.eventsAndFutures = new HashMap<>();
+        this.subscribeMicroservice = new HashMap<>();
     }
 
     public static MessageBus getInstance()
@@ -32,24 +32,32 @@ public class MessageBusImpl implements MessageBus
         return new MessageBusImpl();
     }
 
-
     @Override
     public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
     {
+        if(!this.subscribeMicroservice.containsKey(type))
+            this.subscribeMicroservice.put(type,new LinkedList<>());
+
         this.subscribeMicroservice.get(type).add(m);
     }
 
     @Override
     public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m)
     {
+        if(!this.subscribeMicroservice.containsKey(type))
+            this.subscribeMicroservice.put(type,new LinkedList<>());
+
         this.subscribeMicroservice.get(type).add(m);
     }
 
     @Override @SuppressWarnings("unchecked")
     public <T> void complete(Event<T> e, T result)
     {
-        this.eventsAndFutures.get(e).resolve(result);
-        this.eventsAndFutures.remove(e);
+        if(this.eventsAndFutures.containsKey(e))
+        {
+            this.eventsAndFutures.get(e).resolve(result);
+            this.eventsAndFutures.remove(e);
+        }
     }
 
     @Override
@@ -79,13 +87,17 @@ public class MessageBusImpl implements MessageBus
     @Override
     public void unregister(MicroService m)
     {
-        this.microServicesMessages.remove(m);
+        if(this.microServicesMessages.containsKey(m))
+            this.microServicesMessages.remove(m);
     }
 
 
     @Override
     public Message awaitMessage(MicroService m) throws InterruptedException
     {
-        return this.microServicesMessages.get(m).remove();
+        if(this.microServicesMessages.containsKey(m))
+            return this.microServicesMessages.get(m).remove();
+
+        return null; // NEED TO CHANGE - run until you find a message
     }
 }

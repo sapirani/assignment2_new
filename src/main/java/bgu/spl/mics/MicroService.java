@@ -37,7 +37,6 @@ public abstract class MicroService implements Runnable {
     {
         this.name = name;
         this.messageBus = MessageBusImpl.getInstance();
-
         this.handleMessage = new Hashtable<>();
     }
 
@@ -172,12 +171,9 @@ public abstract class MicroService implements Runnable {
             try {
                 message = this.messageBus.awaitMessage(this);
                 this.handleMessage.get(message.getClass()).call(message?); // what to send to call function
-                this.messageBus.complete((Event) message, true); // think about casting
+                this.messageBus.complete((Event) message, true); // think about casting - create call for Event and call for broadcast
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }*/
-
-
     }
-
 }

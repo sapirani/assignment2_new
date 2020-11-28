@@ -48,7 +48,6 @@ public class Future<T> {
     {
         this.result = result;
         this.isDone = true;
-
     }
 
     /**
@@ -71,13 +70,11 @@ public class Future<T> {
      */
     public T get(long timeout, TimeUnit unit)
     {
-
         if (isDone())
             return this.result;
 
-        // wait until getting result
+        // wait timeout for getting result
 
         return null;
     }
-
 }
