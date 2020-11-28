@@ -57,7 +57,7 @@ class MessageBusTest {
     {
         AttackEvent attack = new AttackEvent();
         DeactivationEvent deactivation = new DeactivationEvent();
-        Message recievedAttack = null;
+        Message receivedAttack = null;
 
         // Initialize Microservices
         MicroService leia = new LeiaMicroservice(new Attack[0]);
@@ -77,14 +77,14 @@ class MessageBusTest {
             messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sends broadcast (c3po is not subscribed to this type of messages)
             messageBus.sendEvent(attack); // Leia sends message of type AttackEvent
 
-            recievedAttack = messageBus.awaitMessage(c3po); // C3PO should get the message that Leia sent
+            receivedAttack = messageBus.awaitMessage(c3po); // C3PO should get the message that Leia sent
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        assertTrue(recievedAttack.getClass() == AttackEvent.class);
+        assertTrue(receivedAttack.getClass() == AttackEvent.class);
     }
 
     @Test
@@ -248,14 +248,10 @@ class MessageBusTest {
         messageBus.register(c3po);
         messageBus.register(lando);
 
-        // Try use the function subscribeEvent in MicroService
-        Callback<Boolean> callback = b -> {};
         try
         {
             messageBus.subscribeEvent(AttackEvent.class , c3po); // C3PO subscribes to messages from type AttackEvent
             messageBus.subscribeBroadcast(TerminateBroadcast.class , c3po); // C3PO subscribes to broadcast messages from type TerminateBroadcast
-
-          //  nullMessage = messageBus.awaitMessage(c3po); // c3po's queue of messages is empty, so there is no message to return from the method.
 
             messageBus.sendEvent(attack); // Leia sends message from type AttackEvent            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
             resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
@@ -268,7 +264,6 @@ class MessageBusTest {
             e.printStackTrace();
         }
 
-        //assertTrue(nullMessage.equals(null));
         assertTrue(attack.equals(resolvedMessage));
         assertTrue(terminate.equals(resolvedBroadcastMessage));
     }
