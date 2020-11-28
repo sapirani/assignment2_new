@@ -9,6 +9,20 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MessageBusImpl implements MessageBus
 {
+    private static MessageBus messageBus = null;
+
+    private MessageBusImpl()
+    {
+        // init
+    }
+
+    public static MessageBus getInstance()
+    {
+        if (messageBus != null)
+            return messageBus;
+
+        return new MessageBusImpl();
+    }
 
 
     @Override
@@ -57,6 +71,8 @@ public class MessageBusImpl implements MessageBus
     @Override
     public Message awaitMessage(MicroService m) throws InterruptedException
     {
+        ///Attack = pop();
+        //m.startCallback(Attck);
 
         return null;
     }
