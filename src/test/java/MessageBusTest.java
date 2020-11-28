@@ -7,6 +7,7 @@ import bgu.spl.mics.application.services.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,7 +28,7 @@ class MessageBusTest {
     @BeforeEach
     void setUp()
     {
-        messageBus = new MessageBusImpl();
+        messageBus = MessageBusImpl.getInstance();
         try
         {
             // Setting access to Event functions in MicroService
@@ -56,7 +57,7 @@ class MessageBusTest {
     {
         AttackEvent attack = new AttackEvent();
         DeactivationEvent deactivation = new DeactivationEvent();
-        Message resolvedMessage = null;
+        Message recievedAttack = null;
 
         // Initialize Microservices
         MicroService leia = new LeiaMicroservice(new Attack[0]);
@@ -68,31 +69,30 @@ class MessageBusTest {
         messageBus.register(c3po);
         messageBus.register(r2d2);
 
-        // Try use the function subscribeEvent in MicroService
-        Callback<Boolean> callback = b -> {};
         try
         {
-            subscribeEventTest.invoke(c3po,AttackEvent.class, callback); // C3PO subscribes to events from type AttackEvent
+            messageBus.subscribeEvent(AttackEvent.class , c3po); // C3PO subscribes to messages of type AttackEvent
 
-            sendEventTest.invoke(leia,attack); // Leia sends message from type AttackEvent
-            sendEventTest.invoke(r2d2,deactivation); // R2D2 sends message from type deactivationEvent
+            messageBus.sendEvent(deactivation); // R2D2 sends message of type DeactivationEvent
+            messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sends broadcast (c3po is not subscribed to this type of messages)
+            messageBus.sendEvent(attack); // Leia sends message of type AttackEvent
 
-            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
+            recievedAttack = messageBus.awaitMessage(c3po); // C3PO should get the message that Leia sent
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        assertTrue(resolvedMessage.getClass() == AttackEvent.class);
+        assertTrue(recievedAttack.getClass() == AttackEvent.class);
     }
 
     @Test
-    void subscribeBroadcast()
+    void subscribeBroadcastTest()
     {
         TerminateBroadcast terminate = new TerminateBroadcast();
-        Message resolvedMessageLeia = null;
-        Message resolvedMessageR2D2 = null;
+        Message receivedMessageLeia = null;
+        Message receivedMessageR2D2 = null;
 
         // Initialize MicroServices
         MicroService leia = new LeiaMicroservice(new Attack[0]);
@@ -104,25 +104,28 @@ class MessageBusTest {
         messageBus.register(r2d2);
         messageBus.register(lando);
 
-        // Try use the function subscribeBroadcast in MicroService
-        Callback<Boolean> callback = b -> {};
         try
         {
-            subscribeBroadcastTest.invoke(leia,TerminateBroadcast.class, callback); // Leia subscribes to messages from type TerminateBroadcast
-            subscribeBroadcastTest.invoke(r2d2,TerminateBroadcast.class, callback); // R2D2 subscribes to messages from type TerminateBroadcast
+            messageBus.subscribeBroadcast(TerminateBroadcast.class , leia); // Leia subscribes to messages of type TerminateBroadcast
+            messageBus.subscribeBroadcast(TerminateBroadcast.class, r2d2); // R2D2 subscribes to messages of type TerminateBroadcast
 
-            sendBroadcastTest.invoke(lando,terminate); // Lando sends broadcast message from type Terminate
+            messageBus.sendEvent(new AttackEvent()); // Leia sends message of type AttackEvent,
+                                                     // but there isn't any microService that subscribes for this type of messages.
+            messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sent a broadcast message,
+                                                          // The message is not of type TerminateBroadcast,
+                                                          // so there isn't microService that subscribes to this type of messages
+            messageBus.sendBroadcast(terminate); // Lando sends message of type TerminateBroadcast
 
-            resolvedMessageLeia = messageBus.awaitMessage(leia); // Leia gets broadcast message, the message should be from type TerminateBroadcast
-            resolvedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 gets broadcast message, the message should be from type TerminateBroadcast
+            receivedMessageLeia = messageBus.awaitMessage(leia); // Leia should get the message that Lando sent
+            receivedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 should get the message that Lando sent
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        assertTrue(resolvedMessageLeia.getClass() == TerminateBroadcast.class);
-        assertTrue(resolvedMessageR2D2.getClass() == TerminateBroadcast.class);
+        assertTrue(receivedMessageLeia.getClass() == TerminateBroadcast.class);
+        assertTrue(receivedMessageR2D2.getClass() == TerminateBroadcast.class);
     }
 
     @Test
@@ -137,8 +140,8 @@ class MessageBusTest {
 
         try
         {
-            leiaFuture = (Future<Boolean>) sendEventTest.invoke(leia, LeiaMsg); // leia sends an event.
-                                                                                // The methods output is a Future object
+            leiaFuture = messageBus.sendEvent(LeiaMsg); // leia sends an event.
+                                                        // The methods output is a Future object
             messageBus.complete(LeiaMsg, true); // when calling complete, The Future's result should be equal to the parameter
                                                       // In this case, the Future should be resolved and the result needs to be 'true'
         }
@@ -152,11 +155,11 @@ class MessageBusTest {
     }
 
     @Test
-    void sendBroadcast()
+    void sendBroadcastTest()
     {
         TerminateBroadcast terminate = new TerminateBroadcast();
-        Message resolvedMessageLeia = null;
-        Message resolvedMessageR2D2 = null;
+        Message receivedMessageLeia = null;
+        Message receivedMessageR2D2 = null;
 
         // Initialize MicroServices
         MicroService leia = new LeiaMicroservice(new Attack[0]);
@@ -168,17 +171,15 @@ class MessageBusTest {
         messageBus.register(r2d2);
         messageBus.register(lando);
 
-        // Try use the function sendBroadcast in MicroService
-        Callback<Boolean> callback = b -> {};
         try
         {
-            subscribeBroadcastTest.invoke(leia,TerminateBroadcast.class, callback); // Leia subscribes to messages from type TerminateBroadcast
-            subscribeBroadcastTest.invoke(r2d2,TerminateBroadcast.class, callback); // R2D2 subscribes to messages from type TerminateBroadcast
+            messageBus.subscribeBroadcast(TerminateBroadcast.class , leia); // Leia subscribes to messages of type TerminateBroadcast
+            messageBus.subscribeBroadcast(TerminateBroadcast.class, r2d2); // R2D2 subscribes to messages of type TerminateBroadcast
 
-            sendBroadcastTest.invoke(lando,terminate); // Lando sends broadcast message from type Terminate
+            messageBus.sendBroadcast(terminate); // Lando sends message of type TerminateBroadcast
 
-            resolvedMessageLeia = messageBus.awaitMessage(leia); // Leia gets broadcast message, the message should be from type TerminateBroadcast
-            resolvedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 gets broadcast message, the message should be from type TerminateBroadcast
+            receivedMessageLeia = messageBus.awaitMessage(leia); // Leia should get the message that Lando sent
+            receivedMessageR2D2 = messageBus.awaitMessage(r2d2); // R2D2 should get the message that Lando sent
         }
         catch (Exception e)
         {
@@ -186,40 +187,36 @@ class MessageBusTest {
         }
 
         // The message that lando sent needs to be equal to the messages that leia and r2d2 received.
-        assertTrue(resolvedMessageLeia.equals(terminate));
-        assertTrue(resolvedMessageR2D2.equals(terminate));
+        assertTrue(receivedMessageLeia.equals(terminate));
+        assertTrue(receivedMessageR2D2.equals(terminate));
     }
 
     @Test
-    void sendEvent()
+    void sendEventTest()
     {
         AttackEvent attack = new AttackEvent();
-        Message resolvedMessage = null;
+        Message receivedAttack = null;
 
         // Initialize MicroServices
         MicroService leia = new LeiaMicroservice(new Attack[0]);
-        MicroService c3po = new C3POMicroservice();
+        MicroService hanSolo = new HanSoloMicroservice();
 
-        // register the MicroServices
+        // Register Microservices
         messageBus.register(leia);
-        messageBus.register(c3po);
+        messageBus.register(hanSolo);
 
-        // Try use the function sendEvent in MicroService
-        Callback<Boolean> callback = b -> {};
         try
         {
-            subscribeEventTest.invoke(c3po,AttackEvent.class, callback); // C3PO subscribes to messages from type AttackEvent
-
-            sendEventTest.invoke(leia,attack); // Leia sends message from type AttackEvent
-
-            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
+            messageBus.subscribeEvent(AttackEvent.class , hanSolo); // HanSolo subscribes to messages of type AttackEvent
+            messageBus.sendEvent(attack); // Leia sends message of type AttackEvent
+            receivedAttack = messageBus.awaitMessage(hanSolo); // HanSolo should get the message that Leia sent
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
 
-        assertTrue(attack.equals(resolvedMessage));
+        assertTrue(attack.equals(receivedAttack));
     }
 
     @Test
@@ -255,14 +252,15 @@ class MessageBusTest {
         Callback<Boolean> callback = b -> {};
         try
         {
-            subscribeEventTest.invoke(c3po,AttackEvent.class, callback); // C3PO subscribes to messages from type AttackEvent
-            subscribeBroadcastTest.invoke(c3po, TerminateBroadcast.class,callback); // C3PO subscribes to broadcast messages from type TerminateBroadcast
+            messageBus.subscribeEvent(AttackEvent.class , c3po); // C3PO subscribes to messages from type AttackEvent
+            messageBus.subscribeBroadcast(TerminateBroadcast.class , c3po); // C3PO subscribes to broadcast messages from type TerminateBroadcast
 
-            nullMessage = messageBus.awaitMessage(c3po); // c3po's queue of messages is empty, so there is no message to return from the method.
+          //  nullMessage = messageBus.awaitMessage(c3po); // c3po's queue of messages is empty, so there is no message to return from the method.
 
-            sendEventTest.invoke(leia,attack); // Leia sends message from type AttackEvent
+            messageBus.sendEvent(attack); // Leia sends message from type AttackEvent            resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
             resolvedMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type AttackEvent
-            sendBroadcastTest.invoke(lando, terminate); // Lando sends message from type TerminateBroadcast
+
+            messageBus.sendBroadcast(terminate); // Lando sends message from type TerminateBroadcast
             resolvedBroadcastMessage = messageBus.awaitMessage(c3po); // C3PO gets message, the message should be from type TerminateBroadcast
         }
         catch (Exception e)
@@ -270,7 +268,7 @@ class MessageBusTest {
             e.printStackTrace();
         }
 
-        assertTrue(nullMessage.equals(null));
+        //assertTrue(nullMessage.equals(null));
         assertTrue(attack.equals(resolvedMessage));
         assertTrue(terminate.equals(resolvedBroadcastMessage));
     }
