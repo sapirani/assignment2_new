@@ -170,6 +170,7 @@ public abstract class MicroService implements Runnable {
             /*Message message = null;
             try {
                 message = this.messageBus.awaitMessage(this);
+                // maybe the complete inside the call function
                 this.handleMessage.get(message.getClass()).call(message?); // what to send to call function
                 this.messageBus.complete((Event) message, true); // think about casting - create call for Event and call for broadcast
             } catch (InterruptedException e) {
