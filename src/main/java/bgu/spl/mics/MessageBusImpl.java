@@ -1,8 +1,6 @@
 package bgu.spl.mics;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
@@ -11,10 +9,14 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class MessageBusImpl implements MessageBus
 {
-    private static MessageBus messageBus = null;
-    private HashMap<MicroService, Queue<Message>> microServicesMessages;
+    private HashMap<MicroService, BlockingQueue<Message>> microServicesMessages;
     private HashMap<Event, Future> eventsAndFutures;
     private HashMap<Class<? extends Message> , List<MicroService>> subscribeMicroservice;
+
+    private static class MessageBusHolder
+    {
+        private static MessageBus instance = new MessageBusImpl();
+    }
 
     private MessageBusImpl()
     {
@@ -26,19 +28,16 @@ public class MessageBusImpl implements MessageBus
 
     public static MessageBus getInstance()
     {
-        if (messageBus != null)
-            return messageBus;
-
-        return new MessageBusImpl();
+        return MessageBusHolder.instance;
     }
 
     @Override
     public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
     {
         if(!this.subscribeMicroservice.containsKey(type))
-            this.subscribeMicroservice.put(type,new LinkedList<>());
+            this.subscribeMicroservice.put(type,new LinkedList<>()); // create new list of microServices that can get this 'type' of events
 
-        this.subscribeMicroservice.get(type).add(m);
+        this.subscribeMicroservice.get(type).add(m); // add the microservice to the list represented by the suitable type
     }
 
     @Override
@@ -89,6 +88,12 @@ public class MessageBusImpl implements MessageBus
     {
         if(this.microServicesMessages.containsKey(m))
             this.microServicesMessages.remove(m);
+
+        for(Class key: subscribeMicroservice.keySet())
+        {
+            if(this.subscribeMicroservice.get(key).contains(m))
+                this.subscribeMicroservice.get(key).remove(m);
+        }
     }
 
 
