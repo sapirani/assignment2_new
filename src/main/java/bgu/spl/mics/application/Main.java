@@ -4,6 +4,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.*;
 import bgu.spl.mics.application.services.*;
 
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class Main
@@ -13,17 +14,16 @@ public class Main
         try {
             Input input = JsonInputReader.getInputFromJson(args[0]);
             simulate(input);
-            writeOutput();
+            writeOutput(args[1]);
 
-
-            System.out.println(input.getEwoks());
+            /*System.out.println(input.getEwoks());
             System.out.println(input.getLando());
             System.out.println(input.getR2D2());
             for (Attack a: input.getAttacks()) {
                 System.out.println("passiveObjects.Attack");
                 System.out.println(a.getDuration());
                 System.out.println(a.getSerials());
-            }
+            }*/
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,9 +51,16 @@ public class Main
         LandoThread.start();
     }
 
-    private static void writeOutput()
+    private static void writeOutput(String path)
     {
-        Diary.getInstance().executionOutput();
+        try {
+            FileWriter myWriter = new FileWriter(path);
+            myWriter.write(Diary.getInstance().executionOutput());
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

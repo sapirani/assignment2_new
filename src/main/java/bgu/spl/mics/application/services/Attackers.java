@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 public abstract class Attackers extends MicroService
@@ -31,6 +32,8 @@ public abstract class Attackers extends MicroService
                     ewoks.acquireEwoks(attackMsg.getSerials());
                     Thread.sleep(attackMsg.getDuration());
                     this.complete(attackMsg, true);
+                    Diary.getInstance().AddAttack();
+                    setFinished();
                     ewoks.notifyAll();
                 }
             }
@@ -40,4 +43,6 @@ public abstract class Attackers extends MicroService
             }
         });
     }
+
+    protected abstract void setFinished();
 }

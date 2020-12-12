@@ -32,7 +32,7 @@ public class Diary
         this.totalAttacks = 0;
     }
 
-    public void AddAttacks() {
+    public void AddAttack() {
         this.totalAttacks++;
     }
 

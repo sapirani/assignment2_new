@@ -37,8 +37,13 @@ public class Future<T> {
             return this.result;
 
         // wait until getting result
+        try {
+            this.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        return null;
+        return this.result;
     }
 
     /**
@@ -48,6 +53,7 @@ public class Future<T> {
     {
         this.result = result;
         this.isDone = true;
+        this.notifyAll();
     }
 
     /**
@@ -74,7 +80,12 @@ public class Future<T> {
             return this.result;
 
         // wait timeout for getting result
+        try {
+            this.wait(unit.toMillis(timeout));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-        return null;
+        return this.result;
     }
 }

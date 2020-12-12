@@ -35,7 +35,13 @@ public class HanSoloMicroservice extends Attackers
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
+                Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());
             }
         });
+    }
+
+    @Override
+    protected void setFinished() {
+        Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());
     }
 }

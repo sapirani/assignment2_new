@@ -30,8 +30,12 @@ public class R2D2Microservice extends MicroService {
     {
         subscribeEvent(DeactivationEvent.class, (deactivationEvent)->{
             try {
+
                 Thread.sleep(this.deactivation_time);
                 this.complete(deactivationEvent, true);
+                Diary.getInstance().setR2D2Deactivate(System.currentTimeMillis());
+                this.sendEvent(new BombDestroyerEvent());
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -43,6 +47,7 @@ public class R2D2Microservice extends MicroService {
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
+                Diary.getInstance().setR2D2Terminate(System.currentTimeMillis());
             }
         });
     }

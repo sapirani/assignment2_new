@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.passiveObjects.Diary;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -172,7 +174,15 @@ public abstract class MicroService implements Runnable {
         {
             try {
                 Message message = this.messageBus.awaitMessage(this);
-                this.handleMessage.get(message).call(message);
+                if (message instanceof Event)
+                    this.handleMessage.get((Event)message).call((Event)message); // casting?
+
+                else if (message instanceof Broadcast)
+                    this.handleMessage.get((Broadcast)message).call((Broadcast)message); // casting?
+
+                System.out.println(Diary.getInstance().executionOutput());
+                System.out.println();
+                System.out.println();
 
             } catch (InterruptedException e) {
                 e.printStackTrace();

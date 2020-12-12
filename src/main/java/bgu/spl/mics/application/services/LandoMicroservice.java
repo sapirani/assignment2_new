@@ -26,8 +26,11 @@ public class LandoMicroservice  extends MicroService {
     {
         subscribeEvent(BombDestroyerEvent.class, (bombDestroyerEvent)->{
             try {
+
                 Thread.sleep(this.bomb_star_destroyer_time);
                 this.complete(bombDestroyerEvent, true);
+                this.sendBroadcast(new TerminateBroadcast());
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -39,6 +42,7 @@ public class LandoMicroservice  extends MicroService {
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
+                Diary.getInstance().setLandoTerminate(System.currentTimeMillis());
             }
         });
     }
