@@ -31,7 +31,7 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      *
      */
-    public T get()
+    public synchronized T get()
     {
         if (isDone())
             return this.result;
@@ -74,7 +74,7 @@ public class Future<T> {
      * 	       wait for {@code timeout} TimeUnits {@code unit}. If time has
      *         elapsed, return null.
      */
-    public T get(long timeout, TimeUnit unit)
+    public synchronized T get(long timeout, TimeUnit unit)
     {
         if (isDone())
             return this.result;

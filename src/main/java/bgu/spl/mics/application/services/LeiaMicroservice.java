@@ -56,8 +56,10 @@ public class LeiaMicroservice extends MicroService
             }
         });
 
+        waitUntilFinishAllAttacks();
+        this.sendEvent(new DeactivationEvent());
 
-        try {
+        /*try {
 
             synchronized (this) {
                 while (!this.finishedAllAttacks()) {
@@ -71,6 +73,14 @@ public class LeiaMicroservice extends MicroService
 
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }*/
+    }
+
+    private void waitUntilFinishAllAttacks()
+    {
+        for (Future future : this.attackFutures)
+        {
+            future.get();
         }
     }
 
