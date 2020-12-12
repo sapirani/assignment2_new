@@ -49,6 +49,17 @@ public class Main
         C3POThread.start();
         R2D2Thread.start();
         LandoThread.start();
+
+        try {
+            LeiaThread.join();
+            HansoloThread.join();
+            C3POThread.join();
+            R2D2Thread.join();
+            LandoThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static void writeOutput(String path)
