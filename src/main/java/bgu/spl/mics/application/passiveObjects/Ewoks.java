@@ -66,4 +66,12 @@ public class Ewoks
         }
         return true;
     }
+
+    public void releaseEwoks(List<Integer> serialNumbers)
+    {
+        for (int ewok : serialNumbers)
+        {
+            this.ewoks.get(ewok).release();
+        }
+    }
 }

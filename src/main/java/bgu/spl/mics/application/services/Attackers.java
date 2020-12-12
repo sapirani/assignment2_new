@@ -35,6 +35,7 @@ public abstract class Attackers extends MicroService
                     Thread.sleep(attackMsg.getDuration());
                     this.complete(attackMsg, true);
                     System.out.println(getName() + " finished attack " + attackMsg.getDuration());
+                    ewoks.releaseEwoks(attackMsg.getSerials());
                     Diary.getInstance().AddAttack();
                     setFinished();
                     ewoks.notifyAll();
