@@ -24,9 +24,10 @@ public class LandoMicroservice  extends MicroService {
     @Override
     protected void initialize()
     {
-        subscribeEvent(BombDestroyerEvent.class, (BombDestroyerEvent)->{
+        subscribeEvent(BombDestroyerEvent.class, (bombDestroyerEvent)->{
             try {
                 Thread.sleep(this.bomb_star_destroyer_time);
+                this.complete(bombDestroyerEvent, true);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

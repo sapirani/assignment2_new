@@ -166,6 +166,18 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run()
     {
+        this.messageBus.register(this);
+        this.initialize();
+        while (!Thread.interrupted())
+        {
+            try {
+                Message message = this.messageBus.awaitMessage(this);
+                this.handleMessage.get(message).call(message);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         // loop
             /*Message message = null;
             try {
@@ -176,5 +188,7 @@ public abstract class MicroService implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }*/
+
+        this.messageBus.unregister(this);
     }
 }

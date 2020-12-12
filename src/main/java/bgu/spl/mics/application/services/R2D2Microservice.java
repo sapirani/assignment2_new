@@ -28,9 +28,10 @@ public class R2D2Microservice extends MicroService {
     @Override
     protected void initialize()
     {
-        subscribeEvent(DeactivationEvent.class, (DeactivationEvent)->{
+        subscribeEvent(DeactivationEvent.class, (deactivationEvent)->{
             try {
                 Thread.sleep(this.deactivation_time);
+                this.complete(deactivationEvent, true);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

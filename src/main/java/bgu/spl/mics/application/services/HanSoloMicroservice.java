@@ -18,7 +18,7 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class HanSoloMicroservice extends MicroService
+public class HanSoloMicroservice extends Attackers
 {
     public HanSoloMicroservice() {
         super("Han");
@@ -27,31 +27,7 @@ public class HanSoloMicroservice extends MicroService
     @Override
     protected void initialize()
     {
-        subscribeEvent(AttackEvent.class, new Callback<AttackEvent>()
-        {
-            @Override
-            public void call(AttackEvent attackMsg)
-            {
-                try
-                {
-                    Ewoks ewoks = Ewoks.getInstance();
-                    // acquire Ewoks
-                    synchronized (ewoks) // need to find better solution - do not block all ewoks class
-                    {
-                        while (!ewoks.canAcquire(attackMsg.getSerials()))
-                            ewoks.wait();
-
-                        ewoks.acquireEwoks(attackMsg.getSerials());
-                        Thread.sleep(attackMsg.getDuration());
-                        ewoks.notifyAll();
-                    }
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
+        super.initialize();
 
         // need to subscribe to broadcast msg
         subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {

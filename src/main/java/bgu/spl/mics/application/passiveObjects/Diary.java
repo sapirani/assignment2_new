@@ -18,9 +18,20 @@ public class Diary
     private long R2D2Terminate;
     private long LandoTerminate;
 
+    private static class DiaryHolder
+    {
+        private static Diary instance = new Diary();
+    }
+
+    public static Diary getInstance()
+    {
+        return DiaryHolder.instance;
+    }
+
     public Diary() {
         this.totalAttacks = 0;
     }
+
     public void AddAttacks() {
         this.totalAttacks++;
     }

@@ -82,12 +82,11 @@ public class MessageBusImpl implements MessageBus
         Future<T> futureEvent = new Future<>();
         this.eventsAndFutures.put(e,futureEvent);
 
-        //  insert event to the queue of the right microservice
-        MicroService microService = roundRobinCurrentMicroservice(e);
-
         try {
+            //  insert event to the queue of the right microservice
+            MicroService microService = roundRobinCurrentMicroservice(e);
             this.microServicesMessages.get(microService).put(e);
-        } catch (InterruptedException exception) {
+        } catch (InterruptedException exception) { // to do - what about interruption
             exception.printStackTrace();
         }
 
@@ -132,8 +131,10 @@ public class MessageBusImpl implements MessageBus
         return message;
     }
 
-    private <T> MicroService roundRobinCurrentMicroservice(Event<T> e)
-    {
+    private synchronized <T> MicroService roundRobinCurrentMicroservice(Event<T> e) throws InterruptedException {
+        while (!this.subscribeMicroservice.containsKey(e))
+            this.wait();
+
         int numberOfMicroservices = this.subscribeMicroservice.get(e).size();
 
         if (this.roundRobinIndex >= numberOfMicroservices)
