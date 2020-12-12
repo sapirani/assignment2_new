@@ -112,13 +112,13 @@ public class MessageBusImpl implements MessageBus
         if(this.microServicesMessages.containsKey(m))
             this.microServicesMessages.remove(m);
 
-        this.subscribeMicroservice.values().removeAll(Collections.singleton(m));
+        //this.subscribeMicroservice.values().removeAll(Collections.singleton(m));
 
-        /*for(List<MicroService> list : subscribeMicroservice.values()) // if the Upper line doesnt work
+        for(List<MicroService> list : subscribeMicroservice.values()) // if the Upper line doesnt work
         {
             if(list.contains(m))
                 list.remove(m);
-        }*/
+        }
     }
 
 
