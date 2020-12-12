@@ -1,4 +1,5 @@
 package bgu.spl.mics.application.services;
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
@@ -15,8 +16,10 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class LeiaMicroservice extends MicroService {
+public class LeiaMicroservice extends MicroService
+{
     private Attack[] attacks;
+    // need to take care of futures
 
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
@@ -24,7 +27,22 @@ public class LeiaMicroservice extends MicroService {
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize()
+    {
+        for(Attack attack : this.attacks)
+        {
+            AttackEvent event = new AttackEvent(attack);
 
+            sendEvent(event); // what to do with return value?
+        }
+
+        // need to subscribe to broadcast msg
+        subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {
+            @Override
+            public void call(TerminateBroadcast terminateMsg)
+            {
+                terminate();
+            }
+        });
     }
 }

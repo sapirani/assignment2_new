@@ -1,6 +1,8 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.*;
+import bgu.spl.mics.application.services.LeiaMicroservice;
 
 import java.io.IOException;
 
@@ -10,6 +12,9 @@ public class Main
     {
         try {
             Input input = JsonInputReader.getInputFromJson(args[0]);
+            simulate(input);
+
+
             System.out.println(input.getEwoks());
             System.out.println(input.getLando());
             System.out.println(input.getR2D2());
@@ -21,5 +26,11 @@ public class Main
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void simulate(Input input)
+    {
+        Ewoks.getInstance().loadEwoks(input.getEwoks()); // load ewoks
+        MicroService leia = new LeiaMicroservice(input.getAttacks());
     }
 }

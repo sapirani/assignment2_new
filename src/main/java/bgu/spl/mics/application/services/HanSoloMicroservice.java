@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import java.util.List;
 
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
@@ -17,14 +18,32 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class HanSoloMicroservice extends MicroService {
-
+public class HanSoloMicroservice extends MicroService
+{
     public HanSoloMicroservice() {
         super("Han");
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize()
+    {
+        subscribeEvent(AttackEvent.class, new Callback<AttackEvent>()
+        {
+            @Override
+            public void call(AttackEvent attackMsg)
+            {
+                try
+                {
+                    // acquire Ewoks
+                    Ewoks.getInstance().acquireEwoks(attackMsg.getSerials());
+                    Thread.sleep(attackMsg.getDuration());
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 }

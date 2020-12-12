@@ -86,14 +86,17 @@ public class MessageBusImpl implements MessageBus
     @Override
     public void unregister(MicroService m)
     {
+        // to do - if m is not registered yet, wait until it's register itself
         if(this.microServicesMessages.containsKey(m))
             this.microServicesMessages.remove(m);
 
-        for(Class key: subscribeMicroservice.keySet())
+        this.subscribeMicroservice.values().removeAll(Collections.singleton(m));
+
+        /*for(List<MicroService> list : subscribeMicroservice.values()) // if the Upper line doesnt work
         {
-            if(this.subscribeMicroservice.get(key).contains(m))
-                this.subscribeMicroservice.get(key).remove(m);
-        }
+            if(list.contains(m))
+                list.remove(m);
+        }*/
     }
 
 

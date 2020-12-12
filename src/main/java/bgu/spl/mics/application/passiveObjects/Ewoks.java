@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -15,15 +16,37 @@ import java.util.List;
  */
 public class Ewoks
 {
+    private static class EwoksHolder
+    {
+        private static Ewoks instance = new Ewoks();
+    }
+
     private List<Ewok> ewoks;
 
-    public Ewoks(int number_of_ewoks)
+    public Ewoks(){}
+
+    public void loadEwoks(int numOfEwoks)
     {
-        ewoks = new ArrayList<>(number_of_ewoks + 1);
+        this.ewoks = new ArrayList<Ewok>(numOfEwoks);
+        for(int i = 0; i<numOfEwoks ;i++)
+        {
+            Ewok e = new Ewok(i);
+            ewoks.add(e);
+        }
+    }
+
+    public static Ewoks getInstance()
+    {
+        return EwoksHolder.instance;
     }
 
     public void addEwok(Ewok ewok)
     {
         ewoks.set(ewok.getSerialNumber(), ewok);
+    }
+
+    public void acquireEwoks(List<Integer> serialNumbers)
+    {
+
     }
 }
