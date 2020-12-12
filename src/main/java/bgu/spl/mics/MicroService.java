@@ -179,11 +179,17 @@ public abstract class MicroService implements Runnable {
                 Message message = this.messageBus.awaitMessage(this);
                 System.out.println(this.getName() + " got msg - " + message.getClass().toString());
 
-                if (message instanceof Event)
-                    this.handleMessage.get((Event)message).call((Event)message); // casting?
+                Event e;
+                Broadcast b;
+                if (message instanceof Event) {
+                    e = (Event) message;
+                    this.handleMessage.get(e.getClass()).call(e); // casting?
+                }
 
-                else if (message instanceof Broadcast)
-                    this.handleMessage.get((Broadcast)message).call((Broadcast)message); // casting?
+                else if (message instanceof Broadcast) {
+                    b = (Broadcast) message;
+                    this.handleMessage.get(b.getClass()).call(b); // casting?
+                }
 
                 System.out.println(this.getName() + " after call function");
                 System.out.println(Diary.getInstance().executionOutput());
@@ -194,6 +200,7 @@ public abstract class MicroService implements Runnable {
                 e.printStackTrace();
             }
         }
+
         // loop
             /*Message message = null;
             try {

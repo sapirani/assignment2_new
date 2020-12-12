@@ -26,12 +26,15 @@ public abstract class Attackers extends MicroService
                 // acquire Ewoks
                 synchronized (ewoks) // need to find better solution - do not block all ewoks class
                 {
+                    System.out.println(getName() + " try acquire " + attackMsg.getSerials().toString());
                     while (!ewoks.canAcquire(attackMsg.getSerials()))
                         ewoks.wait();
 
+                    System.out.println(getName() + " acquired " + attackMsg.getSerials().toString());
                     ewoks.acquireEwoks(attackMsg.getSerials());
                     Thread.sleep(attackMsg.getDuration());
                     this.complete(attackMsg, true);
+                    System.out.println(getName() + " finished attack " + attackMsg.getDuration());
                     Diary.getInstance().AddAttack();
                     setFinished();
                     ewoks.notifyAll();

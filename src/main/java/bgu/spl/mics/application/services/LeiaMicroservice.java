@@ -59,16 +59,15 @@ public class LeiaMicroservice extends MicroService
 
         try {
 
-            System.out.println(this.getName() + " in try finish");
-            while (!this.finishedAllAttacks())
-            {
-                wait();
+            synchronized (this) {
+                while (!this.finishedAllAttacks()) {
+                    System.out.println(getName() + " is waiting for attacks to finish ");
+                    wait();
+                    this.finishedAttacks++;
+                }
 
-                System.out.println(this.getName() + " after wait");
-                this.finishedAttacks++;
+                this.sendEvent(new DeactivationEvent());
             }
-
-            this.sendEvent(new DeactivationEvent());
 
         } catch (InterruptedException e) {
             e.printStackTrace();

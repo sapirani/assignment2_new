@@ -9,7 +9,7 @@ import java.util.concurrent.*;
  */
 public class MessageBusImpl implements MessageBus
 {
-    private int roundRobinIndex;
+    private HashMap<Class<? extends Event>, Integer> roundRobinIndexPerEventClass;
     private HashMap<MicroService, BlockingQueue<Message>> microServicesMessages;
     private HashMap<Event, Future> eventsAndFutures;
     private HashMap<Class<? extends Message> , List<MicroService>> subscribeMicroservice;
@@ -22,7 +22,7 @@ public class MessageBusImpl implements MessageBus
     private MessageBusImpl()
     {
         // init
-        this.roundRobinIndex = 0;
+        this.roundRobinIndexPerEventClass = new HashMap<>();
         this.microServicesMessages = new HashMap<>();
         this.eventsAndFutures = new HashMap<>();
         this.subscribeMicroservice = new HashMap<>();
@@ -34,21 +34,23 @@ public class MessageBusImpl implements MessageBus
     }
 
     @Override
-    public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
+    public synchronized <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
     {
         if(!this.subscribeMicroservice.containsKey(type))
             this.subscribeMicroservice.put(type,new LinkedList<>()); // create new list of microServices that can get this 'type' of events
 
         this.subscribeMicroservice.get(type).add(m); // add the microservice to the list represented by the suitable type
+        notifyAll();
     }
 
     @Override
-    public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m)
+    public synchronized void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m)
     {
         if(!this.subscribeMicroservice.containsKey(type))
             this.subscribeMicroservice.put(type,new LinkedList<>());
 
         this.subscribeMicroservice.get(type).add(m);
+        notifyAll();
     }
 
     @Override @SuppressWarnings("unchecked")
@@ -79,17 +81,17 @@ public class MessageBusImpl implements MessageBus
     @Override
     public <T> Future<T> sendEvent(Event<T> e)
     {
+        System.out.println("event " + e.getClass() + " sent to the message bus");
         Future<T> futureEvent = new Future<>();
         this.eventsAndFutures.put(e,futureEvent);
 
         try {
-            //  insert event to the queue of the right microservice
+            // insert event to the queue of the right microservice
             MicroService microService = roundRobinCurrentMicroservice(e);
             this.microServicesMessages.get(microService).put(e);
         } catch (InterruptedException exception) { // to do - what about interruption
             exception.printStackTrace();
         }
-
 
         return futureEvent;
     }
@@ -123,23 +125,39 @@ public class MessageBusImpl implements MessageBus
         if(!this.microServicesMessages.containsKey(m))
             return null;
 
+        // if do not have messages to deal with right now
+        System.out.println(m.getName() + " is waiting for message ");
         while (this.microServicesMessages.get(m).isEmpty())
             this.wait();
 
         Message message = this.microServicesMessages.get(m).remove();
-        this.notifyAll();
+        this.notifyAll(); // necessary?
         return message;
     }
 
     private synchronized <T> MicroService roundRobinCurrentMicroservice(Event<T> e) throws InterruptedException {
-        while (!this.subscribeMicroservice.containsKey(e))
+        // no one subscribed to this message yet
+        while (!this.subscribeMicroservice.containsKey(e.getClass()))
+        {
+            System.out.println("waiting for someone take care the event " + e.getClass());
             this.wait();
+        }
 
-        int numberOfMicroservices = this.subscribeMicroservice.get(e).size();
+        if (!this.roundRobinIndexPerEventClass.containsKey(e.getClass()))
+        {
+            this.roundRobinIndexPerEventClass.put(e.getClass(), 0);
+        }
 
-        if (this.roundRobinIndex >= numberOfMicroservices)
-            this.roundRobinIndex = 0;
+        int numberOfMicroservices = this.subscribeMicroservice.get(e.getClass()).size();
+        int currentIndex = this.roundRobinIndexPerEventClass.get(e.getClass());
 
-        return this.subscribeMicroservice.get(e).get(this.roundRobinIndex++);
+        if (currentIndex >= numberOfMicroservices) {
+            this.roundRobinIndexPerEventClass.put(e.getClass(), 0); // get class?
+            currentIndex = 0;
+        }
+
+        this.roundRobinIndexPerEventClass.put(e.getClass(), currentIndex + 1);
+
+        return this.subscribeMicroservice.get(e.getClass()).get(currentIndex);
     }
 }

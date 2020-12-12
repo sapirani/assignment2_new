@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,11 +28,13 @@ public class Ewoks
 
     public void loadEwoks(int numOfEwoks)
     {
-        this.ewoks = new ArrayList<Ewok>(numOfEwoks);
-        for(int i = 0; i<numOfEwoks ;i++)
+        // ignore index 0 - serial number will be from 1 to numOfEwoks
+        this.ewoks = new ArrayList<Ewok>();
+        this.ewoks.add(0, null);
+        for(int i = 1; i <= numOfEwoks ;i++)
         {
             Ewok e = new Ewok(i);
-            ewoks.add(e);
+            ewoks.add(i, e);
         }
     }
 
@@ -55,6 +58,7 @@ public class Ewoks
 
     public boolean canAcquire(List<Integer> serialNumbers)
     {
+        Collections.sort(serialNumbers);
         for (int ewok : serialNumbers)
         {
             if (!this.ewoks.get(ewok).isAvailable())
