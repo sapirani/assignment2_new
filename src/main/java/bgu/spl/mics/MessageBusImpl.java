@@ -114,10 +114,16 @@ public class MessageBusImpl implements MessageBus
 
         //this.subscribeMicroservice.values().removeAll(Collections.singleton(m));
 
-        for(List<MicroService> list : subscribeMicroservice.values()) // if the Upper line doesnt work
+        for(Map.Entry<Class<? extends Message>, List<MicroService>> pair : subscribeMicroservice.entrySet()) // if the Upper line doesnt work
         {
-            if(list.contains(m))
-                list.remove(m);
+            if(pair.getValue().contains(m)) {
+                pair.getValue().remove(m);
+
+                if (pair.getValue().isEmpty()) {
+                    this.subscribeMicroservice.remove(pair.getKey());
+                    this.roundRobinIndexPerEventClass.remove(pair.getKey());
+                }
+            }
         }
     }
 
