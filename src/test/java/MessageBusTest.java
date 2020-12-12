@@ -68,8 +68,8 @@ class MessageBusTest {
         {
             messageBus.subscribeEvent(AttackEvent.class , c3po); // C3PO subscribes to messages of type AttackEvent
 
-            messageBus.sendEvent(deactivation); // R2D2 sends message of type DeactivationEvent
-            messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sends broadcast (c3po is not subscribed to this type of messages)
+            //messageBus.sendEvent(deactivation); // R2D2 sends message of type DeactivationEvent
+            //messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sends broadcast (c3po is not subscribed to this type of messages)
             messageBus.sendEvent(attack); // Leia sends message of type AttackEvent
 
             receivedAttack = messageBus.awaitMessage(c3po); // C3PO should get the message that Leia sent

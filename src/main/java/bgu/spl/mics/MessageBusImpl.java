@@ -113,17 +113,24 @@ public class MessageBusImpl implements MessageBus
             this.microServicesMessages.remove(m);
 
         //this.subscribeMicroservice.values().removeAll(Collections.singleton(m));
+        List<Class<?extends Message>> keysOfEmptyLists = new ArrayList<>();
 
-        for(Map.Entry<Class<? extends Message>, List<MicroService>> pair : subscribeMicroservice.entrySet()) // if the Upper line doesnt work
+        for(Class<? extends Message> key : subscribeMicroservice.keySet()) // if the Upper line doesnt work
         {
-            if(pair.getValue().contains(m)) {
-                pair.getValue().remove(m);
+            List<MicroService> value = this.subscribeMicroservice.get(key);
+            if(value.contains(m)) {
+                value.remove(m);
 
-                if (pair.getValue().isEmpty()) {
-                    this.subscribeMicroservice.remove(pair.getKey());
-                    this.roundRobinIndexPerEventClass.remove(pair.getKey());
+                if (value.isEmpty()) {
+                    keysOfEmptyLists.add(key);
                 }
             }
+        }
+
+        for(Class<? extends Message> key : keysOfEmptyLists)
+        {
+            this.subscribeMicroservice.remove(key);
+            this.roundRobinIndexPerEventClass.remove(key);
         }
     }
 
