@@ -9,6 +9,7 @@ import java.util.concurrent.*;
  */
 public class MessageBusImpl implements MessageBus
 {
+    private int roundRobinIndex;
     private HashMap<MicroService, BlockingQueue<Message>> microServicesMessages;
     private HashMap<Event, Future> eventsAndFutures;
     private HashMap<Class<? extends Message> , List<MicroService>> subscribeMicroservice;
@@ -21,6 +22,7 @@ public class MessageBusImpl implements MessageBus
     private MessageBusImpl()
     {
         // init
+        this.roundRobinIndex = 0;
         this.microServicesMessages = new HashMap<>();
         this.eventsAndFutures = new HashMap<>();
         this.subscribeMicroservice = new HashMap<>();
@@ -63,6 +65,14 @@ public class MessageBusImpl implements MessageBus
     public void sendBroadcast(Broadcast b)
     {
         //  insert broadcast to the queue of the right microservice
+        for (MicroService microService : subscribeMicroservice.get(b))
+        {
+            try {
+                this.microServicesMessages.get(microService).put(b);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 
@@ -73,6 +83,14 @@ public class MessageBusImpl implements MessageBus
         this.eventsAndFutures.put(e,futureEvent);
 
         //  insert event to the queue of the right microservice
+        MicroService microService = roundRobinCurrentMicroservice(e);
+
+        try {
+            this.microServicesMessages.get(microService).put(e);
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+        }
+
 
         return futureEvent;
     }
@@ -101,11 +119,26 @@ public class MessageBusImpl implements MessageBus
 
 
     @Override
-    public Message awaitMessage(MicroService m) throws InterruptedException
+    public synchronized Message awaitMessage(MicroService m) throws InterruptedException
     {
-        if(this.microServicesMessages.containsKey(m))
-            return this.microServicesMessages.get(m).remove();
+        if(!this.microServicesMessages.containsKey(m))
+            return null;
 
-        return null; // NEED TO CHANGE - run until you find a message
+        while (this.microServicesMessages.get(m).isEmpty())
+            this.wait();
+
+        Message message = this.microServicesMessages.get(m).remove();
+        this.notifyAll();
+        return message;
+    }
+
+    private <T> MicroService roundRobinCurrentMicroservice(Event<T> e)
+    {
+        int numberOfMicroservices = this.subscribeMicroservice.get(e).size();
+
+        if (this.roundRobinIndex >= numberOfMicroservices)
+            this.roundRobinIndex = 0;
+
+        return this.subscribeMicroservice.get(e).get(this.roundRobinIndex++);
     }
 }

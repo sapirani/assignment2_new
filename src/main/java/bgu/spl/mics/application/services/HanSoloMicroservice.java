@@ -34,9 +34,17 @@ public class HanSoloMicroservice extends MicroService
             {
                 try
                 {
+                    Ewoks ewoks = Ewoks.getInstance();
                     // acquire Ewoks
-                    Ewoks.getInstance().acquireEwoks(attackMsg.getSerials());
-                    Thread.sleep(attackMsg.getDuration());
+                    synchronized (ewoks) // need to find better solution - do not block all ewoks class
+                    {
+                        while (!ewoks.canAcquire(attackMsg.getSerials()))
+                            ewoks.wait();
+
+                        ewoks.acquireEwoks(attackMsg.getSerials());
+                        Thread.sleep(attackMsg.getDuration());
+                        ewoks.notifyAll();
+                    }
                 }
                 catch (InterruptedException e)
                 {
@@ -45,5 +53,13 @@ public class HanSoloMicroservice extends MicroService
             }
         });
 
+        // need to subscribe to broadcast msg
+        subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {
+            @Override
+            public void call(TerminateBroadcast terminateMsg)
+            {
+                terminate();
+            }
+        });
     }
 }

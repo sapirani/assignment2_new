@@ -47,6 +47,19 @@ public class Ewoks
 
     public void acquireEwoks(List<Integer> serialNumbers)
     {
+        for (int ewok : serialNumbers)
+        {
+            this.ewoks.get(ewok).acquire();
+        }
+    }
 
+    public boolean canAcquire(List<Integer> serialNumbers)
+    {
+        for (int ewok : serialNumbers)
+        {
+            if (!this.ewoks.get(ewok).isAvailable())
+                return false;
+        }
+        return true;
     }
 }

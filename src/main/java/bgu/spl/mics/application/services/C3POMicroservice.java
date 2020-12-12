@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.services;
 import java.util.List;
+
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
@@ -23,7 +25,41 @@ public class C3POMicroservice extends MicroService {
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize()
+    {
+        subscribeEvent(AttackEvent.class, new Callback<AttackEvent>()
+        {
+            @Override
+            public void call(AttackEvent attackMsg)
+            {
+                try
+                {
+                    Ewoks ewoks = Ewoks.getInstance();
+                    // acquire Ewoks
+                    synchronized (ewoks) // need to find better solution - do not block all ewoks class
+                    {
+                        while (!ewoks.canAcquire(attackMsg.getSerials()))
+                            ewoks.wait();
 
+                        ewoks.acquireEwoks(attackMsg.getSerials());
+                        Thread.sleep(attackMsg.getDuration());
+                        ewoks.notifyAll();
+                    }
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        // need to subscribe to broadcast msg
+        subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {
+            @Override
+            public void call(TerminateBroadcast terminateMsg)
+            {
+                terminate();
+            }
+        });
     }
 }

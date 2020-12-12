@@ -1,9 +1,12 @@
 package bgu.spl.mics.application.services;
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Diary;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 /**
  * R2D2Microservices is in charge of the handling {@link DeactivationEvent}.
@@ -23,7 +26,23 @@ public class R2D2Microservice extends MicroService {
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize()
+    {
+        subscribeEvent(DeactivationEvent.class, (DeactivationEvent)->{
+            try {
+                Thread.sleep(this.deactivation_time);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
+        // need to subscribe to broadcast msg
+        subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {
+            @Override
+            public void call(TerminateBroadcast terminateMsg)
+            {
+                terminate();
+            }
+        });
     }
 }

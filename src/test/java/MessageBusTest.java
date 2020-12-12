@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class MessageBusTest {
@@ -55,7 +57,8 @@ class MessageBusTest {
     @Test
     void subscribeEventTest()
     {
-        AttackEvent attack = new AttackEvent();
+        // constructor of AttackEvent changed
+        AttackEvent attack = new AttackEvent(new Attack(new ArrayList<>(), 20));
         DeactivationEvent deactivation = new DeactivationEvent();
         Message receivedAttack = null;
 
@@ -89,7 +92,7 @@ class MessageBusTest {
             messageBus.subscribeBroadcast(TerminateBroadcast.class , leia); // Leia subscribes to messages of type TerminateBroadcast
             messageBus.subscribeBroadcast(TerminateBroadcast.class, r2d2); // R2D2 subscribes to messages of type TerminateBroadcast
 
-            messageBus.sendEvent(new AttackEvent()); // Leia sends message of type AttackEvent,
+            messageBus.sendEvent(new AttackEvent(new Attack(new ArrayList<>(), 20))); // Leia sends message of type AttackEvent,
                                                      // but there isn't any microService that subscribes for this type of messages.
             messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sent a broadcast message,
                                                           // The message is not of type TerminateBroadcast,
@@ -111,7 +114,7 @@ class MessageBusTest {
     @Test
     void completeTest()
     {
-        AttackEvent LeiaMsg = new AttackEvent();
+        AttackEvent LeiaMsg = new AttackEvent(new Attack(new ArrayList<>(), 20));
         Future<Boolean> leiaFuture = null;
         boolean result = true;
 
@@ -161,7 +164,7 @@ class MessageBusTest {
     @Test
     void sendEventTest()
     {
-        AttackEvent attack = new AttackEvent();
+        AttackEvent attack = new AttackEvent(new Attack(new ArrayList<>(), 20));
         Message receivedAttack = null;
 
         try
@@ -197,7 +200,7 @@ class MessageBusTest {
 
         // *** But anyways, here are some tests *** //
 
-        AttackEvent attack = new AttackEvent();
+        AttackEvent attack = new AttackEvent(new Attack(new ArrayList<>(), 20));
         TerminateBroadcast terminate = new TerminateBroadcast();
         Message receivedMessage = null;
         Message receivedBroadcastMessage = null;
