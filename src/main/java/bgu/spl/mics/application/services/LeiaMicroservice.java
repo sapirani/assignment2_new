@@ -37,11 +37,13 @@ public class LeiaMicroservice extends MicroService
     @Override
     protected void initialize()
     {
+        System.out.println(this.getName() + " in initialize start");
         for(Attack attack : this.attacks)
         {
             AttackEvent event = new AttackEvent(attack);
-
+            System.out.println(this.getName() + " sending attack " + event.getDuration());
             this.attackFutures.add(sendEvent(event)); // what to do with return value?
+            System.out.println(this.getName() + " after sending attack " + event.getDuration());
         }
 
         // need to subscribe to broadcast msg
@@ -56,9 +58,13 @@ public class LeiaMicroservice extends MicroService
 
 
         try {
+
+            System.out.println(this.getName() + " in try finish");
             while (!this.finishedAllAttacks())
             {
                 wait();
+
+                System.out.println(this.getName() + " after wait");
                 this.finishedAttacks++;
             }
 

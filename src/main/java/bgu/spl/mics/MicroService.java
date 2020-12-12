@@ -149,7 +149,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate()
     {
-
+        Thread.currentThread().interrupt();
     }
 
     /**
@@ -168,18 +168,24 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run()
     {
+        System.out.println(this.getName() + " before loop");
         this.messageBus.register(this);
         this.initialize();
         while (!Thread.interrupted())
         {
+            System.out.println(this.getName() + " in loop");
+
             try {
                 Message message = this.messageBus.awaitMessage(this);
+                System.out.println(this.getName() + " got msg - " + message.getClass().toString());
+
                 if (message instanceof Event)
                     this.handleMessage.get((Event)message).call((Event)message); // casting?
 
                 else if (message instanceof Broadcast)
                     this.handleMessage.get((Broadcast)message).call((Broadcast)message); // casting?
 
+                System.out.println(this.getName() + " after call function");
                 System.out.println(Diary.getInstance().executionOutput());
                 System.out.println();
                 System.out.println();
