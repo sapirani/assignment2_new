@@ -27,6 +27,7 @@ public abstract class MicroService implements Runnable {
 
     private String name;
     private MessageBus messageBus;
+    private boolean teminate;
 
     private HashMap<Class, Callback> handleMessage;
 
@@ -39,6 +40,7 @@ public abstract class MicroService implements Runnable {
         this.name = name;
         this.messageBus = MessageBusImpl.getInstance();
         this.handleMessage = new HashMap<>();
+        this.teminate = false;
     }
 
     /**
@@ -148,7 +150,8 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate()
     {
-        Thread.currentThread().interrupt();
+        //Thread.currentThread().interrupt();
+        this.teminate = true;
     }
 
     /**
@@ -170,7 +173,7 @@ public abstract class MicroService implements Runnable {
         System.out.println(this.getName() + " before loop");
         this.messageBus.register(this);
         this.initialize();
-        while (!Thread.interrupted())
+        while (/*!Thread.interrupted()*/!this.teminate)
         {
             System.out.println(this.getName() + " in loop");
 

@@ -38,14 +38,14 @@ public class LeiaMicroservice extends MicroService
     protected void initialize()
     {
         System.out.println(this.getName() + " in initialize start");
-        Diary.getInstance().setStartTime();
 
         try {
-            Thread.sleep(5000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        Diary.getInstance().setStartTime();
         for(Attack attack : this.attacks)
         {
             AttackEvent event = new AttackEvent(attack);
