@@ -23,17 +23,29 @@ public class Ewok
     /**
      * Acquires an Ewok
      */
-    public void acquire()
+    public synchronized void acquire()
     {
+        while (!isAvailable())
+        {
+            try
+            {
+                this.wait();
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+        }
         this.available = false;
     }
 
     /**
      * release an Ewok
      */
-    public void release()
+    public synchronized void release()
     {
         this.available = true;
+        this.notifyAll();
     }
 
     /**
@@ -47,5 +59,8 @@ public class Ewok
     /**
      * get the Ewok's serial number
      */
-    public int getSerialNumber() { return serialNumber; }
+    public int getSerialNumber()
+    {
+        return serialNumber;
+    }
 }

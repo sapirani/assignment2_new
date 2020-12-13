@@ -1,7 +1,6 @@
 package bgu.spl.mics;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
@@ -10,10 +9,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MessageBusImpl implements MessageBus
 {
-    private ConcurrentHashMap<Class<? extends Event>, AtomicInteger> roundRobinIndexPerEventClass;
+    private ConcurrentHashMap<Class<? extends Event>, ConcurrentLinkedQueue<MicroService>> roundRobinQueuePerEventClass;
+    //private ConcurrentHashMap<Class<? extends Event>, AtomicInteger> roundRobinIndexPerEventClass;
     private ConcurrentHashMap<MicroService, BlockingQueue<Message>> microServicesMessages;
     private ConcurrentHashMap<Event, Future> eventsAndFutures;
     private ConcurrentHashMap<Class<? extends Message> , List<MicroService>> subscribeMicroservice;
+
+    private Object subscribeLock;
+    private Object broadcastLock;
 
 
     private static class MessageBusHolder
@@ -24,7 +27,11 @@ public class MessageBusImpl implements MessageBus
     private MessageBusImpl()
     {
         // init
-        this.roundRobinIndexPerEventClass = new ConcurrentHashMap<>();
+        subscribeLock = new Object();
+        broadcastLock = new Object();
+
+        this.roundRobinQueuePerEventClass = new ConcurrentHashMap<>();
+        //this.roundRobinIndexPerEventClass = new ConcurrentHashMap<>();
         this.microServicesMessages = new ConcurrentHashMap<>();
         this.eventsAndFutures = new ConcurrentHashMap<>();
         this.subscribeMicroservice = new ConcurrentHashMap<>();
@@ -38,21 +45,31 @@ public class MessageBusImpl implements MessageBus
     @Override
     public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
     {
-        if(!this.subscribeMicroservice.containsKey(type))
-            this.subscribeMicroservice.put(type,new LinkedList<>()); // create new list of microServices that can get this 'type' of events
+        synchronized (subscribeLock) {
+            if (!this.subscribeMicroservice.containsKey(type))
+                this.subscribeMicroservice.put(type, new LinkedList<>()); // create new list of microServices that can get this 'type' of events
 
-        this.subscribeMicroservice.get(type).add(m); // add the microservice to the list represented by the suitable type
-        System.out.println(m.getName() + " Subscribed to event " + type);
+            this.subscribeMicroservice.get(type).add(m); // add the microservice to the list represented by the suitable type
+            System.out.println(m.getName() + " Subscribed to event " + type);
+
+            if (!this.roundRobinQueuePerEventClass.containsKey(type))
+                this.roundRobinQueuePerEventClass.put(type, new ConcurrentLinkedQueue<>());
+
+            this.roundRobinQueuePerEventClass.get(type).offer(m);
+        }
     }
 
     @Override
     public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m)
     {
-        if(!this.subscribeMicroservice.containsKey(type))
-            this.subscribeMicroservice.put(type,new LinkedList<>());
+        synchronized (this.broadcastLock)
+        {
+            if (!this.subscribeMicroservice.containsKey(type))
+                this.subscribeMicroservice.put(type, new LinkedList<>());
 
-        this.subscribeMicroservice.get(type).add(m);
-        System.out.println(m.getName() + " Subscribed to broadcast " + type);
+            this.subscribeMicroservice.get(type).add(m);
+            System.out.println(m.getName() + " Subscribed to broadcast " + type);
+        }
     }
 
     @Override @SuppressWarnings("unchecked")
@@ -135,7 +152,7 @@ public class MessageBusImpl implements MessageBus
         for(Class<? extends Message> key : keysOfEmptyLists)
         {
             this.subscribeMicroservice.remove(key);
-            this.roundRobinIndexPerEventClass.remove(key);
+            this.roundRobinQueuePerEventClass.remove(key);
         }
     }
 
@@ -165,7 +182,11 @@ public class MessageBusImpl implements MessageBus
             return null;
         }
 
-        // what if C3PO subscribes to AttackEvent after liea sent all her attacks
+        MicroService currentMicroservice = this.roundRobinQueuePerEventClass.get(type).poll();
+        this.roundRobinQueuePerEventClass.get(type).offer(currentMicroservice);
+        return currentMicroservice;
+
+        /*// what if C3PO subscribes to AttackEvent after liea sent all her attacks
 
         // if the type of message is not sent to anybody yet, and this is the first time
         if (!this.roundRobinIndexPerEventClass.containsKey(type))
@@ -189,6 +210,6 @@ public class MessageBusImpl implements MessageBus
         this.roundRobinIndexPerEventClass.put(type, currentIndex); // update the index (it its suppose to be 0)
         int previous = currentIndex.getAndIncrement();
         this.roundRobinIndexPerEventClass.put(type, currentIndex); // update and increment the index
-        return this.subscribeMicroservice.get(type).get(previous); // return the microservice in the previous index
+        return this.subscribeMicroservice.get(type).get(previous); // return the microservice in the previous index*/
     }
 }

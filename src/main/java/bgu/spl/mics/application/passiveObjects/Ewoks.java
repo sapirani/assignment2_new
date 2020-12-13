@@ -50,13 +50,14 @@ public class Ewoks
 
     public void acquireEwoks(List<Integer> serialNumbers)
     {
+        Collections.sort(serialNumbers);
         for (int ewok : serialNumbers)
         {
             this.ewoks.get(ewok).acquire();
         }
     }
 
-    public boolean canAcquire(List<Integer> serialNumbers)
+    /*public boolean canAcquire(List<Integer> serialNumbers)
     {
         Collections.sort(serialNumbers);
         for (int ewok : serialNumbers)
@@ -65,10 +66,11 @@ public class Ewoks
                 return false;
         }
         return true;
-    }
+    }*/
 
     public void releaseEwoks(List<Integer> serialNumbers)
     {
+        Collections.sort(serialNumbers, Collections.reverseOrder());
         for (int ewok : serialNumbers)
         {
             this.ewoks.get(ewok).release();
