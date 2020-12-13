@@ -36,25 +36,23 @@ public class MessageBusImpl implements MessageBus
     }
 
     @Override
-    public synchronized <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
+    public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m)
     {
         if(!this.subscribeMicroservice.containsKey(type))
             this.subscribeMicroservice.put(type,new LinkedList<>()); // create new list of microServices that can get this 'type' of events
 
         this.subscribeMicroservice.get(type).add(m); // add the microservice to the list represented by the suitable type
         System.out.println(m.getName() + " Subscribed to event " + type);
-        notifyAll();
     }
 
     @Override
-    public synchronized void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m)
+    public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m)
     {
         if(!this.subscribeMicroservice.containsKey(type))
             this.subscribeMicroservice.put(type,new LinkedList<>());
 
         this.subscribeMicroservice.get(type).add(m);
         System.out.println(m.getName() + " Subscribed to broadcast " + type);
-        notifyAll();
     }
 
     @Override @SuppressWarnings("unchecked")
@@ -68,13 +66,14 @@ public class MessageBusImpl implements MessageBus
     }
 
     @Override
-    public void sendBroadcast(Broadcast b)
+    public synchronized void sendBroadcast(Broadcast b)
     {
         //  insert broadcast to the queue of the right microservice
         for (MicroService microService : subscribeMicroservice.get(b.getClass()))
         {
             try {
                 this.microServicesMessages.get(microService).put(b);
+                this.notifyAll();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -93,8 +92,12 @@ public class MessageBusImpl implements MessageBus
         try {
             // insert event to the queue of the right microservice
             MicroService microService = roundRobinCurrentMicroservice(type);
-            this.microServicesMessages.get(microService).put(e);
-            this.notifyAll();
+            if(microService == null)
+                return null;
+            else {
+                this.microServicesMessages.get(microService).put(e);
+                this.notifyAll();
+            }
         } catch (InterruptedException exception) { // to do - what about interruption
             exception.printStackTrace();
         }
@@ -141,7 +144,7 @@ public class MessageBusImpl implements MessageBus
     public synchronized Message awaitMessage(MicroService m) throws InterruptedException
     {
         if(!this.microServicesMessages.containsKey(m))
-            return null;
+            throw new IllegalStateException();
 
         // if do not have messages to deal with right now
         System.out.println(m.getName() + " is waiting for message ");
@@ -154,15 +157,17 @@ public class MessageBusImpl implements MessageBus
     }
 
     // need to fix synchronized - so someone could subscribe before choosing the msg
-    private synchronized <T> MicroService roundRobinCurrentMicroservice(Class<? extends Event> type) throws InterruptedException {
+    private <T> MicroService roundRobinCurrentMicroservice(Class<? extends Event> type) throws InterruptedException {
         // no one subscribed to this message yet
-        while (!this.subscribeMicroservice.containsKey(type))
+        if (!this.subscribeMicroservice.containsKey(type))
         {
-            System.out.println("waiting for someone take care the event " + type);
-            this.wait();
+            System.out.println("There is no one subscribed to " + type);
+            return null;
         }
 
         // what if C3PO subscribes to AttackEvent after liea sent all her attacks
+
+        // if the type of message is not sent to anybody yet, and this is the first time
         if (!this.roundRobinIndexPerEventClass.containsKey(type))
         {
             this.roundRobinIndexPerEventClass.put(type, new AtomicInteger(0));
@@ -175,16 +180,15 @@ public class MessageBusImpl implements MessageBus
 
         if (currentIndex.intValue() >= numberOfMicroservices)
         {
-
             do {
                 OldValue = currentIndex.get();
                 newValue = 0;
             } while (!currentIndex.compareAndSet(OldValue, newValue));
         }
 
-        this.roundRobinIndexPerEventClass.put(type, currentIndex);
+        this.roundRobinIndexPerEventClass.put(type, currentIndex); // update the index (it its suppose to be 0)
         int previous = currentIndex.getAndIncrement();
-        this.roundRobinIndexPerEventClass.put(type, currentIndex);
-        return this.subscribeMicroservice.get(type).get(previous);
+        this.roundRobinIndexPerEventClass.put(type, currentIndex); // update and increment the index
+        return this.subscribeMicroservice.get(type).get(previous); // return the microservice in the previous index
     }
 }

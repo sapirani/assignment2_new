@@ -39,11 +39,21 @@ public class LeiaMicroservice extends MicroService
     {
         System.out.println(this.getName() + " in initialize start");
         Diary.getInstance().setStartTime();
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         for(Attack attack : this.attacks)
         {
             AttackEvent event = new AttackEvent(attack);
             System.out.println(this.getName() + " sending attack " + event.getDuration());
-            this.attackFutures.add(sendEvent(event)); // what to do with return value?
+            Future attackFuture = sendEvent(event);
+            if(!(attackFuture == null))
+                this.attackFutures.add(attackFuture); // what to do with return value?
+
             System.out.println(this.getName() + " after sending attack " + event.getDuration());
         }
 
