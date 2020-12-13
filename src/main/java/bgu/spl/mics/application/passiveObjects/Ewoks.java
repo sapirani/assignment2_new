@@ -42,7 +42,10 @@ public class Ewoks
 
     /**
      * Insert Ewoks to the ewoks list.
-     * @param numOfEwoks is the number of Ewoks to insert.
+     * Input:
+     *      @param numOfEwoks is the number of Ewoks to insert.
+     * Output:
+     *      none
      */
     public void loadEwoks(int numOfEwoks)
     {
@@ -60,7 +63,10 @@ public class Ewoks
     /**
      * The thread tries to acquire the Ewoks he needs for the attack.
      * If one of the Ewoks is not available, he will wait until other thread will release it.
-     * @param serialNumbers is list of all the serial numbers of the Ewoks that the thread needs to acquire.
+     * Input:
+     *      @param serialNumbers is list of all the serial numbers of the Ewoks that the thread needs to acquire.
+     * Output:
+     *      none
      */
     public void acquireEwoks(List<Integer> serialNumbers)
     {
@@ -75,7 +81,10 @@ public class Ewoks
     /**
      * The thread releases all the Ewoks that he acquired for the attack.
      * It notifies all the other threads that those Ewoks are available now.
-     * @param serialNumbers
+     * Input:
+     *      @param serialNumbers - list of the needed Ewoks's serial numbers
+     * Output:
+     *       none
      */
     public void releaseEwoks(List<Integer> serialNumbers)
     {

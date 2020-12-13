@@ -24,6 +24,10 @@ public class Ewok
      * Try to catch an Ewok if its possible.
      * If it's not possible, wait until someone will release the Ewok.
      * Acquires an Ewok
+     * Input:
+     *      none
+     * Output:
+     *      none
      */
     public synchronized void acquire()
     {
@@ -42,7 +46,11 @@ public class Ewok
     }
 
     /**
-     * release an Ewok and notify to other threads that the Ewok is available.
+     * Release an Ewok and notify to other threads that the Ewok is available.
+     * Input:
+     *      none
+     * Output:
+     *      none
      */
     public synchronized void release()
     {
@@ -51,7 +59,11 @@ public class Ewok
     }
 
     /**
-     * check if the Ewok is available
+     * Check if the Ewok is available
+     * Input:
+     *      none
+     * Output:
+     *      @return - true if the Ewok is not acquired
      */
     public boolean isAvailable()
     {
@@ -59,7 +71,11 @@ public class Ewok
     }
 
     /**
-     * get the Ewok's serial number
+     * Get the Ewok's serial numbe
+     * Input:
+     *      none
+     * Output:
+     *      @return - the Ewok's serial number
      */
     public int getSerialNumber()
     {

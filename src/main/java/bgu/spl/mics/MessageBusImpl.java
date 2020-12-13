@@ -83,14 +83,14 @@ public class MessageBusImpl implements MessageBus
     }
 
     @Override
-    public synchronized void sendBroadcast(Broadcast b)
+    public /*synchronized*/ void sendBroadcast(Broadcast b)
     {
         //  insert broadcast to the queue of the right microservice
         for (MicroService microService : subscribeMicroservice.get(b.getClass()))
         {
             try {
                 this.microServicesMessages.get(microService).put(b);
-                this.notifyAll();
+                //this.notifyAll();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -99,7 +99,7 @@ public class MessageBusImpl implements MessageBus
 
 
     @Override
-    public synchronized <T> Future<T> sendEvent(Event<T> e)
+    public /*synchronized*/ <T> Future<T> sendEvent(Event<T> e)
     {
         Class<? extends Event> type = e.getClass();
         System.out.println("event " + type + " sent to the message bus");
@@ -113,7 +113,7 @@ public class MessageBusImpl implements MessageBus
                 return null;
             else {
                 this.microServicesMessages.get(microService).put(e);
-                this.notifyAll();
+                //this.notifyAll();
             }
         } catch (InterruptedException exception) { // to do - what about interruption
             exception.printStackTrace();
@@ -158,18 +158,18 @@ public class MessageBusImpl implements MessageBus
 
 
     @Override
-    public synchronized Message awaitMessage(MicroService m) throws InterruptedException
+    public /*synchronized*/ Message awaitMessage(MicroService m) throws InterruptedException
     {
         if(!this.microServicesMessages.containsKey(m))
             throw new IllegalStateException();
 
         // if do not have messages to deal with right now
         System.out.println(m.getName() + " is waiting for message ");
-        while (this.microServicesMessages.get(m).isEmpty())
+        /*while (this.microServicesMessages.get(m).isEmpty())
             this.wait();
 
-        Message message = this.microServicesMessages.get(m).remove();
-       // Message message = this.microServicesMessages.get(m).take();
+        Message message = this.microServicesMessages.get(m).remove();*/
+        Message message = this.microServicesMessages.get(m).take();
         return message;
     }
 
