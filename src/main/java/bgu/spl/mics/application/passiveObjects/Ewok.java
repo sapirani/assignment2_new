@@ -1,4 +1,4 @@
-package bgu.spl.mics.application.passiveObjects;
+package bgu.spl.mics.application.passiveObjects; // The package
 
 /**
  * Passive data-object representing a forest creature summoned when HanSolo and C3PO receive AttackEvents.
@@ -21,26 +21,28 @@ public class Ewok
     }
 
     /**
+     * Try to catch an Ewok if its possible.
+     * If it's not possible, wait until someone will release the Ewok.
      * Acquires an Ewok
      */
     public synchronized void acquire()
     {
-        while (!isAvailable())
+        while (!isAvailable()) // While the Ewok is acquired already by some other thread
         {
             try
             {
-                this.wait();
+                this.wait(); // Wait until the other thread release it.
             }
             catch (InterruptedException e)
             {
                 Thread.currentThread().interrupt();
             }
         }
-        this.available = false;
+        this.available = false; // acquire the Ewok
     }
 
     /**
-     * release an Ewok
+     * release an Ewok and notify to other threads that the Ewok is available.
      */
     public synchronized void release()
     {

@@ -63,7 +63,7 @@ public class LeiaMicroservice extends MicroService
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
-                Diary.getInstance().setLieaTerminate(System.currentTimeMillis());
+                Diary.getInstance().setLeiaTerminate(System.currentTimeMillis());
             }
         });
 
