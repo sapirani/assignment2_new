@@ -1,5 +1,6 @@
-package bgu.spl.mics.application.passiveObjects;
+package bgu.spl.mics.application.passiveObjects; // The package
 
+// Imports:
 import java.util.List;
 
 /**
@@ -9,6 +10,8 @@ import java.util.List;
  * Do not add any additional members/method to this class (except for getters).
  */
 public class Attack {
+
+    // private fields
     final List<Integer> serials;
     final int duration;
 
