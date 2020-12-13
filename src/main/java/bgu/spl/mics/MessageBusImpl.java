@@ -169,7 +169,7 @@ public class MessageBusImpl implements MessageBus
             this.wait();
 
         Message message = this.microServicesMessages.get(m).remove();
-        this.notifyAll(); // necessary?
+       // Message message = this.microServicesMessages.get(m).take();
         return message;
     }
 
