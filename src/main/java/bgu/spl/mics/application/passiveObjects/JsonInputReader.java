@@ -13,8 +13,10 @@ public class JsonInputReader
 {
     /**
      * Convert data from json file to Input object
-     * @param filePath is the path to the input.json file
-     * @return Input object
+     * Input:
+     *      @param filePath is the path to the input.json file
+     * Output:
+     *      @return Input object
      * @throws IOException
      */
     public static Input getInputFromJson(String filePath) throws IOException

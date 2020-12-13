@@ -16,7 +16,10 @@ public class AttackEvent implements Event<Boolean>
 
     /**
      * The Class's Constructor
-     * @param attack
+     * Input:
+     *      @param attack - the attack object
+     * Output:
+     *      none
      */
     public AttackEvent(Attack attack)
     {
@@ -25,7 +28,10 @@ public class AttackEvent implements Event<Boolean>
 
     /**
      * The Class's Getters
-     * @return
+     * Input:
+     *      none
+     * Output:
+     *      @return list of the needed Ewoks serial numbers
      */
 
     public List<Integer> getSerials() { return attack.getSerials(); }

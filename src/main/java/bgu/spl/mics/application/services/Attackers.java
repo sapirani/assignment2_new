@@ -25,42 +25,30 @@ public abstract class Attackers extends MicroService
     @Override
     /**
      * this method is called once when the event loop starts.
+     * Input:
+     *      none
+     * Output:
+     *      none
      */
     protected void initialize()
     {
+        // Subscribing to Attack events and creating appropriate Callback function
         subscribeEvent(AttackEvent.class, (attackMsg)->
         {
             try
             {
-                Ewoks ewoks = Ewoks.getInstance();
+                Ewoks ewoks = Ewoks.getInstance(); // Get the Ewoks singleton instance
 
                 System.out.println(getName() + " try acquire " + attackMsg.getSerials().toString());
-                ewoks.acquireEwoks(attackMsg.getSerials());
-                Thread.sleep(attackMsg.getDuration());
-                this.complete(attackMsg, true);
+
+                ewoks.acquireEwoks(attackMsg.getSerials()); // Acquire the needed Ewoks for the attack
+                Thread.sleep(attackMsg.getDuration()); // The attack - simulated by sleep
+                this.complete(attackMsg, true); // The attack is completed,
+                                                      // need to resolve the related Future by the MessageBs
                 System.out.println(getName() + " finished attack " + attackMsg.getDuration());
-                ewoks.releaseEwoks(attackMsg.getSerials());
-                Diary.getInstance().AddAttack();
-                setFinished();
-
-
-                // acquire Ewoks
-                /*synchronized (ewoks) // need to find better solution - do not block all ewoks class
-                {
-                    System.out.println(getName() + " try acquire " + attackMsg.getSerials().toString());
-                    while (!ewoks.canAcquire(attackMsg.getSerials()))
-                        ewoks.wait();
-
-                    System.out.println(getName() + " acquired " + attackMsg.getSerials().toString());
-                    ewoks.acquireEwoks(attackMsg.getSerials());
-                    Thread.sleep(attackMsg.getDuration());
-                    this.complete(attackMsg, true);
-                    System.out.println(getName() + " finished attack " + attackMsg.getDuration());
-                    ewoks.releaseEwoks(attackMsg.getSerials());
-                    Diary.getInstance().AddAttack();
-                    setFinished();
-                    ewoks.notifyAll();
-                }*/
+                ewoks.releaseEwoks(attackMsg.getSerials()); // Release the Ewoks that used for the attack
+                Diary.getInstance().AddAttack(); // Updating the attacks number in the diary
+                setFinished(); // Set the time the thread finished the attack
             }
             catch (InterruptedException e)
             {
@@ -69,5 +57,12 @@ public abstract class Attackers extends MicroService
         });
     }
 
+    /**
+     * Abstract method so each MicroService (of the two) will update his finish time in the diary
+     * Input:
+     *      none
+     * Output:
+     *      none
+     */
     protected abstract void setFinished();
 }
