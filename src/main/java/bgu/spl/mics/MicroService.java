@@ -2,8 +2,7 @@ package bgu.spl.mics;
 
 import bgu.spl.mics.application.passiveObjects.Diary;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,7 +28,7 @@ public abstract class MicroService implements Runnable {
     private String name;
     private MessageBus messageBus;
 
-    private Dictionary<Class, Callback> handleMessage;
+    private HashMap<Class, Callback> handleMessage;
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -39,7 +38,7 @@ public abstract class MicroService implements Runnable {
     {
         this.name = name;
         this.messageBus = MessageBusImpl.getInstance();
-        this.handleMessage = new Hashtable<>();
+        this.handleMessage = new HashMap<>();
     }
 
     /**
@@ -179,7 +178,7 @@ public abstract class MicroService implements Runnable {
                 Message message = this.messageBus.awaitMessage(this);
                 System.out.println(this.getName() + " got msg - " + message.getClass().toString());
 
-                Event e;
+                /*Event e;
                 Broadcast b;
                 if (message instanceof Event) {
                     e = (Event) message;
@@ -189,7 +188,9 @@ public abstract class MicroService implements Runnable {
                 else if (message instanceof Broadcast) {
                     b = (Broadcast) message;
                     this.handleMessage.get(b.getClass()).call(b); // casting?
-                }
+                }*/
+
+                this.handleMessage.get(message.getClass()).call(message); // casting?
 
                 System.out.println(this.getName() + " after call function");
                 System.out.println(Diary.getInstance().executionOutput());

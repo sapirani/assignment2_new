@@ -38,6 +38,7 @@ public class LeiaMicroservice extends MicroService
     protected void initialize()
     {
         System.out.println(this.getName() + " in initialize start");
+        Diary.getInstance().setStartTime();
         for(Attack attack : this.attacks)
         {
             AttackEvent event = new AttackEvent(attack);
@@ -84,8 +85,8 @@ public class LeiaMicroservice extends MicroService
         }
     }
 
-    private boolean finishedAllAttacks()
+    /*private boolean finishedAllAttacks()
     {
         return this.attacks.length == this.finishedAttacks;
-    }
+    }*/
 }

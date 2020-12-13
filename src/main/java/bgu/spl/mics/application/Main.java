@@ -3,6 +3,7 @@ package bgu.spl.mics.application;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.*;
 import bgu.spl.mics.application.services.*;
+import com.google.gson.Gson;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -65,12 +66,29 @@ public class Main
     private static void writeOutput(String path)
     {
         try {
-            FileWriter myWriter = new FileWriter(path);
+            /*FileWriter myWriter = new FileWriter(path);
             myWriter.write(Diary.getInstance().executionOutput());
+            myWriter.close();*/
+
+            Gson gson = new Gson();
+            FileWriter myWriter = new FileWriter(path);
+            System.out.println(gson.toJson(Diary.getInstance()));
+
+            gson.toJson(Diary.getInstance(), myWriter);
             myWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+
+
+
+
+
+
+
+
 
     }
 

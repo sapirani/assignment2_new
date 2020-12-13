@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.passiveObjects;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Passive data-object representing a Diary - in which the flow of the battle is recorded.
  * We are going to compare your recordings with the expected recordings, and make sure that your output makes sense.
@@ -8,7 +10,7 @@ package bgu.spl.mics.application.passiveObjects;
  */
 public class Diary
 {
-    private int totalAttacks;
+    private AtomicInteger totalAttacks;
     private long HanSoloFinish;
     private long C3POFinish;
     private long R2D2Deactivate;
@@ -17,6 +19,7 @@ public class Diary
     private long C3POTerminate;
     private long R2D2Terminate;
     private long LandoTerminate;
+    private transient long startTime;
 
     private static class DiaryHolder
     {
@@ -29,43 +32,47 @@ public class Diary
     }
 
     public Diary() {
-        this.totalAttacks = 0;
+        this.totalAttacks = new AtomicInteger(0);
     }
 
     public void AddAttack() {
-        this.totalAttacks++;
+        this.totalAttacks.getAndIncrement();
     }
 
     public void setHanSoloFinish(long hanSoloFinish) {
-        this.HanSoloFinish = hanSoloFinish;
+        this.HanSoloFinish = hanSoloFinish - this.startTime;
     }
 
     public void setC3POFinish(long c3POFinish) {
-        this.C3POFinish = c3POFinish;
+        this.C3POFinish = c3POFinish - this.startTime;
     }
 
     public void setR2D2Deactivate(long r2D2Deactivate) {
-        this.R2D2Deactivate = r2D2Deactivate;
+        this.R2D2Deactivate = r2D2Deactivate - this.startTime;
     }
 
     public void setLieaTerminate(long lieaTerminate) {
-        this.LieaTerminate = lieaTerminate;
+        this.LieaTerminate = lieaTerminate - this.startTime;
     }
 
     public void setHanSoloTerminate(long hanSoloTerminate) {
-        this.HanSoloTerminate = hanSoloTerminate;
+        this.HanSoloTerminate = hanSoloTerminate - this.startTime;
     }
 
     public void setC3POTerminate(long c3POTerminate) {
-        this.C3POTerminate = c3POTerminate;
+        this.C3POTerminate = c3POTerminate - this.startTime;
     }
 
     public void setR2D2Terminate(long r2D2Terminate) {
-        this.R2D2Terminate = r2D2Terminate;
+        this.R2D2Terminate = r2D2Terminate - this.startTime;
     }
 
     public void setLandoTerminate(long landoTerminate) {
-        this.LandoTerminate = landoTerminate;
+        this.LandoTerminate = landoTerminate - this.startTime;
+    }
+
+    public void setStartTime() {
+        this.startTime = System.currentTimeMillis();
     }
 
     public String executionOutput()
