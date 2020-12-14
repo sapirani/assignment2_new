@@ -13,10 +13,7 @@ public class LatchSingleton {
         private static LatchSingleton instance = new LatchSingleton();
     }
 
-    private LatchSingleton()
-    {
-
-    }
+    private LatchSingleton() {}
 
     public static LatchSingleton getInstance()
     {

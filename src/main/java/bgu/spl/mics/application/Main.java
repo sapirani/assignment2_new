@@ -32,7 +32,10 @@ public class Main
 
     private static void simulate(Input input)
     {
+        final int NUMBER_OF_MICROSERVICES = 5;
+
         Ewoks.getInstance().loadEwoks(input.getEwoks()); // load ewoks
+
         MicroService Leia = new LeiaMicroservice(input.getAttacks());
         MicroService Hansolo  = new HanSoloMicroservice();
         MicroService C3PO  = new C3POMicroservice();
@@ -45,7 +48,7 @@ public class Main
         Thread R2D2Thread = new Thread(R2D2);
         Thread LandoThread = new Thread(Lando);
 
-        LatchSingleton.getInstance().setLatch(5);
+        LatchSingleton.getInstance().setLatch(NUMBER_OF_MICROSERVICES);
 
         LeiaThread.start();
         HansoloThread.start();

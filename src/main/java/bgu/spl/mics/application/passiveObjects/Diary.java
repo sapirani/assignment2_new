@@ -42,7 +42,7 @@ public class Diary
     /**
      * The Class's COnstructor
      */
-    public Diary()
+    private Diary()
     {
         this.totalAttacks = new AtomicInteger(0);
     }

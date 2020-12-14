@@ -38,7 +38,7 @@ public class Ewoks
     /**
      * The Class's Constructor
      */
-    public Ewoks(){}
+    private Ewoks(){}
 
     /**
      * Insert Ewoks to the ewoks list.
