@@ -40,10 +40,16 @@ public class LeiaMicroservice extends MicroService
         System.out.println(this.getName() + " in initialize start");
 
         try {
-            Thread.sleep(500);
+            Thread.sleep(600);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        /*this.latch.countDown();
+        try {
+            this.latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
 
         Diary.getInstance().setStartTime();
         for(Attack attack : this.attacks)

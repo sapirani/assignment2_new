@@ -50,5 +50,12 @@ public class R2D2Microservice extends MicroService {
                 Diary.getInstance().setR2D2Terminate(System.currentTimeMillis());
             }
         });
+
+        /*this.latch.countDown();
+        try {
+            this.latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
     }
 }

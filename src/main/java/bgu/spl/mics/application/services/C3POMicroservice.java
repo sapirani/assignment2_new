@@ -38,6 +38,13 @@ public class C3POMicroservice extends Attackers {
                 Diary.getInstance().setC3POTerminate(System.currentTimeMillis());
             }
         });
+
+        /*this.latch.countDown();
+        try {
+            this.latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
     }
 
     @Override

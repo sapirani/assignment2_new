@@ -45,5 +45,12 @@ public class LandoMicroservice  extends MicroService {
                 Diary.getInstance().setLandoTerminate(System.currentTimeMillis());
             }
         });
+
+        /*this.latch.countDown();
+        try {
+            this.latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
     }
 }

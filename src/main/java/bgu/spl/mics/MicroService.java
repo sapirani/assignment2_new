@@ -4,6 +4,7 @@ import bgu.spl.mics.application.passiveObjects.Diary;
 
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * The MicroService is an abstract class that any micro-service in the system
@@ -27,7 +28,9 @@ public abstract class MicroService implements Runnable {
 
     private String name;
     private MessageBus messageBus;
-    private boolean teminate;
+    private boolean terminate;
+
+    //protected CountDownLatch latch;
 
     private HashMap<Class, Callback> handleMessage;
 
@@ -40,7 +43,9 @@ public abstract class MicroService implements Runnable {
         this.name = name;
         this.messageBus = MessageBusImpl.getInstance();
         this.handleMessage = new HashMap<>();
-        this.teminate = false;
+        this.terminate = false;
+
+        //this.latch = new CountDownLatch(1);
     }
 
     /**
@@ -151,7 +156,7 @@ public abstract class MicroService implements Runnable {
     protected final void terminate()
     {
         //Thread.currentThread().interrupt();
-        this.teminate = true;
+        this.terminate = true;
     }
 
     /**
@@ -173,7 +178,7 @@ public abstract class MicroService implements Runnable {
         System.out.println(this.getName() + " before loop");
         this.messageBus.register(this);
         this.initialize();
-        while (/*!Thread.interrupted()*/!this.teminate)
+        while (/*!Thread.interrupted()*/!this.terminate)
         {
             System.out.println(this.getName() + " in loop");
 
