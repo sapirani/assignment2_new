@@ -43,7 +43,6 @@ public class LandoMicroservice  extends MicroService {
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
-                Diary.getInstance().setLandoTerminate(System.currentTimeMillis());
             }
         });
 
@@ -60,5 +59,10 @@ public class LandoMicroservice  extends MicroService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
+    }
+
+    @Override
+    protected void close() {
+        Diary.getInstance().setLandoTerminate(System.currentTimeMillis());
     }
 }

@@ -48,7 +48,6 @@ public class R2D2Microservice extends MicroService {
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
-                Diary.getInstance().setR2D2Terminate(System.currentTimeMillis());
             }
         });
 
@@ -65,5 +64,11 @@ public class R2D2Microservice extends MicroService {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
+    }
+
+    @Override
+    protected void close()
+    {
+        Diary.getInstance().setR2D2Terminate(System.currentTimeMillis());
     }
 }

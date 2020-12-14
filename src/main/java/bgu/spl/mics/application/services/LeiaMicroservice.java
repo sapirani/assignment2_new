@@ -77,7 +77,6 @@ public class LeiaMicroservice extends MicroService
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
-                Diary.getInstance().setLeiaTerminate(System.currentTimeMillis());
             }
         });
 
@@ -99,6 +98,11 @@ public class LeiaMicroservice extends MicroService
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
+    }
+
+    @Override
+    protected void close() {
+        Diary.getInstance().setLeiaTerminate(System.currentTimeMillis());
     }
 
     private void waitUntilFinishAllAttacks()

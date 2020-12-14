@@ -36,7 +36,6 @@ public class C3POMicroservice extends Attackers {
             public void call(TerminateBroadcast terminateMsg)
             {
                 terminate();
-                Diary.getInstance().setC3POTerminate(System.currentTimeMillis());
             }
         });
 
@@ -53,6 +52,11 @@ public class C3POMicroservice extends Attackers {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
+    }
+
+    @Override
+    protected void close() {
+        Diary.getInstance().setC3POTerminate(System.currentTimeMillis());
     }
 
     @Override

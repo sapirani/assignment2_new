@@ -203,6 +203,11 @@ public class Tester {
             initialize.countDown();
 
         }
+
+        @Override
+        protected void close() {
+
+        }
     }
     public class SenderMicroServer extends MicroService{
         private CountDownLatch terminateSend;
@@ -231,6 +236,11 @@ public class Tester {
                 else numberOfM3.getAndIncrement();
             }
             terminateSend.countDown();
+        }
+
+        @Override
+        protected void close() {
+
         }
     }
     static AtomicInteger numberOfM1=new AtomicInteger(0);

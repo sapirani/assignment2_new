@@ -149,6 +149,8 @@ public abstract class MicroService implements Runnable {
      */
     protected abstract void initialize();
 
+    protected abstract void close();
+
     /**
      * Signals the event loop that it must terminate after handling the current
      * message.
@@ -222,5 +224,8 @@ public abstract class MicroService implements Runnable {
             }*/
 
         this.messageBus.unregister(this);
+
+        this.close();
+
     }
 }
