@@ -39,13 +39,13 @@ public abstract class Attackers extends MicroService
             {
                 Ewoks ewoks = Ewoks.getInstance(); // Get the Ewoks singleton instance
 
-                System.out.println(getName() + " try acquire " + attackMsg.getSerials().toString());
+                //System.out.println(getName() + " try acquire " + attackMsg.getSerials().toString());
 
                 ewoks.acquireEwoks(attackMsg.getSerials()); // Acquire the needed Ewoks for the attack
                 Thread.sleep(attackMsg.getDuration()); // The attack - simulated by sleep
                 this.complete(attackMsg, true); // The attack is completed,
                                                       // need to resolve the related Future by the MessageBs
-                System.out.println(getName() + " finished attack " + attackMsg.getDuration());
+                //System.out.println(getName() + " finished attack " + attackMsg.getDuration());
                 ewoks.releaseEwoks(attackMsg.getSerials()); // Release the Ewoks that used for the attack
                 Diary.getInstance().AddAttack(); // Updating the attacks number in the diary
                 setFinished(); // Set the time the thread finished the attack

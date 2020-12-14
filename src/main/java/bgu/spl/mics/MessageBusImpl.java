@@ -55,7 +55,7 @@ public class MessageBusImpl implements MessageBus
                 this.subscribeMicroservice.put(type, new ConcurrentLinkedQueue<>());
 
             this.subscribeMicroservice.get(type).add(m); // add the microservice to the list represented by the suitable type
-            System.out.println(m.getName() + " Subscribed to event " + type);
+            //System.out.println(m.getName() + " Subscribed to event " + type);
 
             /*if (!this.roundRobinQueuePerEventClass.containsKey(type))
                 this.roundRobinQueuePerEventClass.put(type, new ConcurrentLinkedQueue<>());
@@ -74,7 +74,7 @@ public class MessageBusImpl implements MessageBus
                 this.subscribeMicroservice.put(type, new ConcurrentLinkedQueue<>());
 
             this.subscribeMicroservice.get(type).add(m);
-            System.out.println(m.getName() + " Subscribed to broadcast " + type);
+            //System.out.println(m.getName() + " Subscribed to broadcast " + type);
         }
     }
 
@@ -109,7 +109,7 @@ public class MessageBusImpl implements MessageBus
     public /*synchronized*/ <T> Future<T> sendEvent(Event<T> e)
     {
         Class<? extends Event> type = e.getClass();
-        System.out.println("event " + type + " sent to the message bus");
+        //System.out.println("event " + type + " sent to the message bus");
         Future<T> futureEvent = new Future<>();
         this.eventsAndFutures.put(e,futureEvent);
 
@@ -180,7 +180,7 @@ public class MessageBusImpl implements MessageBus
             throw new IllegalStateException();
 
         // if do not have messages to deal with right now
-        System.out.println(m.getName() + " is waiting for message ");
+        //System.out.println(m.getName() + " is waiting for message ");
         /*while (this.microServicesMessages.get(m).isEmpty())
             this.wait();
 
@@ -194,12 +194,15 @@ public class MessageBusImpl implements MessageBus
         // no one subscribed to this message yet
         if (!this.subscribeMicroservice.containsKey(type))
         {
-            System.out.println("There is no one subscribed to " + type);
+            //System.out.println("There is no one subscribed to " + type);
             return null;
         }
 
-        MicroService currentMicroservice = this.subscribeMicroservice.get(type).poll();
-        this.subscribeMicroservice.get(type).offer(currentMicroservice);
+        MicroService currentMicroservice = null;
+        synchronized (this.subscribeLock) {
+            /*MicroService*/ currentMicroservice = this.subscribeMicroservice.get(type).poll();
+            this.subscribeMicroservice.get(type).offer(currentMicroservice);
+        }
         return currentMicroservice;
 
         /*MicroService currentMicroservice = this.roundRobinQueuePerEventClass.get(type).poll();

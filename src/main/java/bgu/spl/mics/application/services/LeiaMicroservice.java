@@ -37,7 +37,7 @@ public class LeiaMicroservice extends MicroService
     @Override
     protected void initialize()
     {
-        System.out.println(this.getName() + " in initialize start");
+        //System.out.println(this.getName() + " in initialize start");
 
         try {
             Thread.sleep(600);
@@ -55,12 +55,12 @@ public class LeiaMicroservice extends MicroService
         for(Attack attack : this.attacks)
         {
             AttackEvent event = new AttackEvent(attack);
-            System.out.println(this.getName() + " sending attack " + event.getDuration());
+            //System.out.println(this.getName() + " sending attack " + event.getDuration());
             Future attackFuture = sendEvent(event);
             if(!(attackFuture == null))
                 this.attackFutures.add(attackFuture); // what to do with return value?
 
-            System.out.println(this.getName() + " after sending attack " + event.getDuration());
+            //System.out.println(this.getName() + " after sending attack " + event.getDuration());
         }
 
         // need to subscribe to broadcast msg
