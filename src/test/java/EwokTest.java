@@ -1,11 +1,12 @@
+// Imports:
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 import bgu.spl.mics.application.passiveObjects.Ewok;
 
 class EwokTest
 {
+    // Private fields
     private Ewok ewok;
     private int SerialNumber;
 
@@ -17,7 +18,7 @@ class EwokTest
     }
 
     @Test
-    void acquireTest()
+    void acquireTest() // Try to acquire an Ewok
     {
         assertTrue(ewok.isAvailable());
         ewok.acquire();
@@ -25,7 +26,7 @@ class EwokTest
     }
 
     @Test
-    void releaseTest()
+    void releaseTest() // Try to release an Ewok
     {
         ewok.acquire();
         assertFalse(ewok.isAvailable());
@@ -34,7 +35,7 @@ class EwokTest
     }
 
     @Test
-    void serialNumberTest()
+    void serialNumberTest() // Check serial number of an Ewok
     {
         for(int i = 0; i < 10; i++)
         {

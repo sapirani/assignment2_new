@@ -1,3 +1,4 @@
+// Imports:
 import bgu.spl.mics.*;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
@@ -7,13 +8,21 @@ import bgu.spl.mics.application.services.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-class MessageBusTest {
+// *** Changes that has been made all over this test class *** //
+        /*
+        constructor of AttackEvent changed (so the use in AttackEvent change all over the tests)
+        Also created class TerminationBroadcast (so instead of using new Broadcast() and creating anonymous class
+                                                    in some of the functions, we used TerminationBroadcast)
 
+         */
+
+class MessageBusTest
+{
+
+    // Private fields
     private MessageBus messageBus;
 
     // MicroServices
@@ -28,6 +37,15 @@ class MessageBusTest {
     {
         System.out.println("Before each");
         messageBus = MessageBusImpl.getInstance();
+
+        // *** Change has been made here *** //
+        /*
+        We initialized here the microservices like that:
+            LeiaMicroService leia = new LeiaMicroService()
+        Which is stupid, because:
+            the microservice are global variables so any use of one of them in one of the
+            methods will not work, because it will be null.
+         */
 
         // Initialize Microservices
         leia = new LeiaMicroservice(new Attack[0]);
@@ -59,7 +77,6 @@ class MessageBusTest {
     @Test
     void subscribeEventTest()
     {
-        // constructor of AttackEvent changed
         AttackEvent attack = new AttackEvent(new Attack(new ArrayList<>(), 20));
         DeactivationEvent deactivation = new DeactivationEvent();
         Message receivedAttack = null;
@@ -118,14 +135,13 @@ class MessageBusTest {
     {
         AttackEvent LeiaMsg = new AttackEvent(new Attack(new ArrayList<>(), 20));
         Future<Boolean> leiaFuture = null;
-        boolean result = true;
 
         try
         {
             messageBus.subscribeEvent(AttackEvent.class, hanSolo);
             leiaFuture = messageBus.sendEvent(LeiaMsg); // leia sends an event.
                                                         // The methods output is a Future object
-            messageBus.complete(LeiaMsg, result); // when calling complete, The Future's result should be equal to the parameter
+            messageBus.complete(LeiaMsg, true); // when calling complete, The Future's result should be equal to the parameter
                                                       // In this case, the Future should be resolved and the result needs to be 'true'
         }
         catch (Exception e)
@@ -134,7 +150,7 @@ class MessageBusTest {
         }
 
         assertTrue(leiaFuture.isDone()); // after complete, The Future should be done
-        assertTrue(leiaFuture.get().equals(result));
+        assertTrue(leiaFuture.get().equals(true));
     }
 
     @Test

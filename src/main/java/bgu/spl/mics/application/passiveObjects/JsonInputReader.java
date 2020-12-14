@@ -17,7 +17,7 @@ public class JsonInputReader
      *      @param filePath is the path to the input.json file
      * Output:
      *      @return Input object
-     * @throws IOException
+     * @throws IOException exception
      */
     public static Input getInputFromJson(String filePath) throws IOException
     {

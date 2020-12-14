@@ -1,10 +1,7 @@
-package bgu.spl.mics;
+package bgu.spl.mics; // The package
 
-import bgu.spl.mics.application.passiveObjects.Diary;
-
+// Imports:
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * The MicroService is an abstract class that any micro-service in the system
@@ -24,13 +21,12 @@ import java.util.concurrent.CountDownLatch;
  * Only private fields and methods may be added to this class.
  * <p>
  */
-public abstract class MicroService implements Runnable {
-
+public abstract class MicroService implements Runnable
+{
+    // Private fields
     private String name;
     private MessageBus messageBus;
     private boolean terminate;
-
-    //protected CountDownLatch latch;
 
     private HashMap<Class, Callback> handleMessage;
 
@@ -45,7 +41,6 @@ public abstract class MicroService implements Runnable {
         this.handleMessage = new HashMap<>();
         this.terminate = false;
 
-        //this.latch = new CountDownLatch(1);
     }
 
     /**
@@ -71,8 +66,8 @@ public abstract class MicroService implements Runnable {
      */
     protected final <T, E extends Event<T>> void subscribeEvent(Class<E> type, Callback<E> callback)
     {
-        this.handleMessage.put(type, callback);
-        this.messageBus.subscribeEvent(type, this);
+        this.handleMessage.put(type, callback); // Keep the type of the message with the right callback
+        this.messageBus.subscribeEvent(type, this); // call the subscribeEvent function of the messageBus
     }
 
     /**
@@ -97,8 +92,8 @@ public abstract class MicroService implements Runnable {
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback)
     {
-        this.handleMessage.put(type, callback);
-        this.messageBus.subscribeBroadcast(type, this);
+        this.handleMessage.put(type, callback); // Keep the type of the message with the right callback
+        this.messageBus.subscribeBroadcast(type, this); // call the subscribeEvent function of the messageBus
     }
 
     /**
@@ -145,10 +140,15 @@ public abstract class MicroService implements Runnable {
     }
 
     /**
-     * this method is called once when the event loop starts.
+     * An abstract method.
+     * This method is called once when the event loop starts.
      */
     protected abstract void initialize();
 
+    /**
+     * An abstract method
+     * This method is called once when the event loop ends.
+     */
     protected abstract void close();
 
     /**
@@ -157,7 +157,6 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate()
     {
-        //Thread.currentThread().interrupt();
         this.terminate = true;
     }
 
@@ -177,55 +176,31 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run()
     {
-        //System.out.println(this.getName() + " before loop");
+        // Registration
         this.messageBus.register(this);
+
+        // Initialization
         this.initialize();
-        while (/*!Thread.interrupted()*/!this.terminate)
+
+        // Run loop
+        while (!this.terminate)
         {
-            //System.out.println(this.getName() + " in loop");
+            try
+            {
+                Message message = this.messageBus.awaitMessage(this); // Fetch message from the messageBUs
 
-            try {
-                Message message = this.messageBus.awaitMessage(this);
-                //System.out.println(this.getName() + " got msg - " + message.getClass().toString());
-
-                /*Event e;
-                Broadcast b;
-                if (message instanceof Event) {
-                    e = (Event) message;
-                    this.handleMessage.get(e.getClass()).call(e); // casting?
-                }
-
-                else if (message instanceof Broadcast) {
-                    b = (Broadcast) message;
-                    this.handleMessage.get(b.getClass()).call(b); // casting?
-                }*/
-
-                this.handleMessage.get(message.getClass()).call(message); // casting?
-
-                /*System.out.println(this.getName() + " after call function");
-                System.out.println(Diary.getInstance().executionOutput());
-                System.out.println();
-                System.out.println();*/
-
-            } catch (InterruptedException e) {
+                this.handleMessage.get(message.getClass()).call(message); // Handle the message with the right callback function
+            }
+            catch (InterruptedException e)
+            {
                 e.printStackTrace();
             }
         }
 
-        // loop
-            /*Message message = null;
-            try {
-                message = this.messageBus.awaitMessage(this);
-                // maybe the complete inside the call function
-                this.handleMessage.get(message.getClass()).call(message?); // what to send to call function
-                this.messageBus.complete((Event) message, true); // think about casting - create call for Event and call for broadcast
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }*/
-
+        // Unregistration
         this.messageBus.unregister(this);
 
+        // Closing
         this.close();
-
     }
 }

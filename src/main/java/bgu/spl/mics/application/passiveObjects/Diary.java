@@ -40,7 +40,7 @@ public class Diary
     }
 
     /**
-     * The Class's COnstructor
+     * The Class's Constructor
      */
     private Diary()
     {
@@ -133,40 +133,6 @@ public class Diary
         this.LandoTerminate = landoTerminate - this.startTime;
     }
 
-    /**
-     * The function return a string represents the results of the application flow.
-     * @return the output for the Output file.
-     */
-    public String executionOutput()
-    {
-        long finish_attack = HanSoloFinish > C3POFinish ? HanSoloFinish : C3POFinish;
-        String output = "";
-        /*output += "There are " + totalAttacks + " attacks. \n";
-        output += "HanSolo and C3PO finish their tasks ~" + (Math.abs(HanSoloFinish - C3POFinish)) +
-                " milliseconds one after the other. \n";
-        output += "R2D2 deactivated the shield generator after ~" + R2D2Deactivate + " milliseconds. \n";
-        if(LeiaTerminate == HanSoloTerminate && HanSoloTerminate == C3POTerminate && C3POTerminate == R2D2Terminate && R2D2Terminate == LandoTerminate)
-            output += "All threads terminate ~" + (HanSoloTerminate - finish_attack) + " milliseconds after.";
-        else
-        {
-            output += "Liea terminated ~" + (LeiaTerminate - finish_attack) + " milliseconds after.\n" ;
-            output += "HanSolo terminated ~" + (HanSoloTerminate - LeiaTerminate) + " milliseconds after Liea. \n";
-            output += "C3PO terminated ~" + (C3POTerminate - LeiaTerminate) + " milliseconds after Liea. \n";
-            output += "R2D2 terminated ~" + (R2D2Terminate - LeiaTerminate) + " milliseconds after Liea. \n";
-            output += "Lando terminated ~" + (LandoTerminate - R2D2Terminate) + " milliseconds after R2D2.";
-        }*/
-        return output;
-    }
-
-
-
-
-
-
-
-
-
-    // for tests - need to delete
     public AtomicInteger getNumberOfAttacks() {
         return this.totalAttacks;
     }

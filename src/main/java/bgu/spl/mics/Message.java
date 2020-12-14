@@ -1,4 +1,4 @@
-package bgu.spl.mics;
+package bgu.spl.mics; // The package
 
 /**
  * A message is a data-object which is passed between micro-services as a means
@@ -7,6 +7,4 @@ package bgu.spl.mics;
  * contain any methods but every class that you want to send as a message (using
  * the {@link MessageBus}) must implement it.
  */
-public interface Message {
-
-}
+public interface Message { }

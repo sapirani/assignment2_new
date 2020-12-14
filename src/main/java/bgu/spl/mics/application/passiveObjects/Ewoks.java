@@ -3,7 +3,6 @@ package bgu.spl.mics.application.passiveObjects; // The package
 // Imports:
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -49,7 +48,7 @@ public class Ewoks
      */
     public void loadEwoks(int numOfEwoks)
     {
-        this.ewoks = new ArrayList<Ewok>();
+        this.ewoks = new ArrayList<>();
         this.ewoks.add(0, null); // We will not pay attention to the 0 index in the list
 
         // Ignore index 0 - serial number starts from 1 to numOfEwoks

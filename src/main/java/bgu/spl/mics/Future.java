@@ -1,5 +1,6 @@
-package bgu.spl.mics;
+package bgu.spl.mics; // The package
 
+// Imports:
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -10,7 +11,9 @@ import java.util.concurrent.TimeUnit;
  * Only private methods may be added to this class.
  * No public constructor is allowed except for the empty constructor.
  */
-public class Future<T> {
+public class Future<T>
+{
+    // Private fields
     private boolean isDone;
     private T result;
 
@@ -37,9 +40,12 @@ public class Future<T> {
             return this.result;
 
         // wait until getting result
-        try {
+        try
+        {
             this.wait();
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e)
+        {
             e.printStackTrace();
         }
 
@@ -80,9 +86,12 @@ public class Future<T> {
             return this.result;
 
         // wait timeout for getting result
-        try {
+        try
+        {
             this.wait(unit.toMillis(timeout));
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e)
+        {
             e.printStackTrace();
         }
 

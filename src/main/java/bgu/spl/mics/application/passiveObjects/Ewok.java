@@ -71,7 +71,7 @@ public class Ewok
     }
 
     /**
-     * Get the Ewok's serial numbe
+     * Get the Ewok's serial number
      * Input:
      *      none
      * Output:
