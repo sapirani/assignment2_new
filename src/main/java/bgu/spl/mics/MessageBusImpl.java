@@ -19,6 +19,7 @@ public class MessageBusImpl implements MessageBus
 
     private Object subscribeLock;
     private Object broadcastLock;
+    private Object unregisterLock;
 
 
     private static class MessageBusHolder
@@ -29,8 +30,9 @@ public class MessageBusImpl implements MessageBus
     private MessageBusImpl()
     {
         // init
-        subscribeLock = new Object();
-        broadcastLock = new Object();
+        this.subscribeLock = new Object();
+        this.broadcastLock = new Object();
+        this.unregisterLock = new Object();
 
         //this.roundRobinQueuePerEventClass = new ConcurrentHashMap<>();
         //this.roundRobinIndexPerEventClass = new ConcurrentHashMap<>();
@@ -140,27 +142,33 @@ public class MessageBusImpl implements MessageBus
         if(this.microServicesMessages.containsKey(m))
             this.microServicesMessages.remove(m);
 
-        List<Class<?extends Message>> keysOfEmptyLists = new ArrayList<>();
+        synchronized (this.unregisterLock) {
+            List<Class<? extends Message>> keysOfEmptyLists = new ArrayList<>();
 
-        for(Class<? extends Message> key : subscribeMicroservice.keySet()) // if the Upper line doesnt work
-        {
-            //List<MicroService> value = this.subscribeMicroservice.get(key);
-            ConcurrentLinkedQueue<MicroService> value = this.subscribeMicroservice.get(key);
+            for (Class<? extends Message> key : subscribeMicroservice.keySet()) // if the Upper line doesnt work
+            {
+                /*try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+                //List<MicroService> value = this.subscribeMicroservice.get(key);
+                ConcurrentLinkedQueue<MicroService> value = this.subscribeMicroservice.get(key);
 
-            if (value.contains(m)) {
-                value.remove(m);
+                if (value.contains(m)) { // check why value is sometimes null
+                    value.remove(m);
 
-                if (value.isEmpty()) {
-                    keysOfEmptyLists.add(key);
+                    if (value.isEmpty()) {
+                        keysOfEmptyLists.add(key);
+                    }
                 }
             }
-        }
 
 
-        for(Class<? extends Message> key : keysOfEmptyLists)
-        {
-            this.subscribeMicroservice.remove(key);
-            //this.roundRobinQueuePerEventClass.remove(key);
+            for (Class<? extends Message> key : keysOfEmptyLists) {
+                this.subscribeMicroservice.remove(key);
+                //this.roundRobinQueuePerEventClass.remove(key);
+            }
         }
     }
 
