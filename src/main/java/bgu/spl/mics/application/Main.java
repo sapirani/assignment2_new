@@ -45,6 +45,8 @@ public class Main
         Thread R2D2Thread = new Thread(R2D2);
         Thread LandoThread = new Thread(Lando);
 
+        LatchSingleton.getInstance().setLatch(5);
+
         LeiaThread.start();
         HansoloThread.start();
         C3POThread.start();

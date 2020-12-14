@@ -9,6 +9,7 @@ import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.passiveObjects.LatchSingleton;
 
 /**
  * HanSoloMicroservices is in charge of the handling {@link AttackEvent}.
@@ -38,6 +39,13 @@ public class HanSoloMicroservice extends Attackers
                 Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());
             }
         });
+
+        LatchSingleton.getInstance().countDown();
+        try {
+            LatchSingleton.getInstance().await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         /*this.latch.countDown();
         try {

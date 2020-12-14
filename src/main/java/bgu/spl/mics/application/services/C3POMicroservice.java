@@ -8,6 +8,7 @@ import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.passiveObjects.LatchSingleton;
 
 
 /**
@@ -38,6 +39,13 @@ public class C3POMicroservice extends Attackers {
                 Diary.getInstance().setC3POTerminate(System.currentTimeMillis());
             }
         });
+
+        LatchSingleton.getInstance().countDown();
+        try {
+            LatchSingleton.getInstance().await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         /*this.latch.countDown();
         try {

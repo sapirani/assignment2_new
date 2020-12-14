@@ -7,6 +7,7 @@ import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
+import bgu.spl.mics.application.passiveObjects.LatchSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +40,15 @@ public class LeiaMicroservice extends MicroService
     {
         //System.out.println(this.getName() + " in initialize start");
 
-        try {
+        /*try {
             Thread.sleep(600);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
+        LatchSingleton.getInstance().countDown();
+        try {
+            LatchSingleton.getInstance().await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
