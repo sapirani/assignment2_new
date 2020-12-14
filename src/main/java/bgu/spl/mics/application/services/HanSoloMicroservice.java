@@ -1,14 +1,9 @@
-package bgu.spl.mics.application.services;
+package bgu.spl.mics.application.services; // The package
 
-import java.util.List;
-
-import bgu.spl.mics.Callback;
-import bgu.spl.mics.MicroService;
+// Inputs:
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.TerminateBroadcast;
-import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.passiveObjects.Diary;
-import bgu.spl.mics.application.passiveObjects.Ewoks;
 import bgu.spl.mics.application.passiveObjects.LatchSingleton;
 
 /**
@@ -21,44 +16,57 @@ import bgu.spl.mics.application.passiveObjects.LatchSingleton;
  */
 public class HanSoloMicroservice extends Attackers
 {
-    public HanSoloMicroservice() {
-        super("Han");
-    }
+    /**
+     * The Class's Constructor
+     */
+    public HanSoloMicroservice() { super("Han"); }
 
+    /**
+     * this method is called once when the event loop starts.
+     * Input:
+     *      none
+     * Output:
+     *      none
+     */
     @Override
     protected void initialize()
     {
-        super.initialize();
+        super.initialize(); // Call the parent method (subscribing to AttackEvent)
 
-        // need to subscribe to broadcast msg
-        subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {
-            @Override
-            public void call(TerminateBroadcast terminateMsg)
-            {
-                terminate();
-            }
-        });
+        // Need to subscribe to broadcast msg, Create appropriate Callback function, using Lambda expression.
+        subscribeBroadcast(TerminateBroadcast.class, terminateBroadcast->this.terminate());
 
+        // Wait until all the threads are subscribed to the Messages they need to receive.
         LatchSingleton.getInstance().countDown();
-        try {
+        try
+        {
             LatchSingleton.getInstance().await();
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e)
+        {
             e.printStackTrace();
         }
-
-        /*this.latch.countDown();
-        try {
-            this.latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
     }
 
+    /**
+     * Close function that runs one time, after HanSolo terminates.
+     * Writing to the diary the time when HanSolo terminated.
+     * Input:
+     *      none
+     * Output:
+     *      none
+     */
     @Override
     protected void close() {
         Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());
     }
 
+    /**
+     * HanSolo updates his finish time of the attacks in the diary
+     * Input:
+     *      none
+     * Output:
+     *      none
+     */
     @Override
     protected void setFinished() {
         Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());

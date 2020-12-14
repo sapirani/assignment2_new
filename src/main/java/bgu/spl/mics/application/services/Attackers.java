@@ -22,7 +22,6 @@ public abstract class Attackers extends MicroService
         super(name);
     }
 
-    @Override
     /**
      * this method is called once when the event loop starts.
      * Input:
@@ -30,23 +29,27 @@ public abstract class Attackers extends MicroService
      * Output:
      *      none
      */
+    @Override
     protected void initialize()
     {
-        // Subscribing to Attack events and creating appropriate Callback function
+        // Subscribing to Attack event and creating appropriate Callback function
         subscribeEvent(AttackEvent.class, (attackMsg)->
         {
             try
             {
+                // Get Ewoks for attack and try to acquire them
                 Ewoks ewoks = Ewoks.getInstance(); // Get the Ewoks singleton instance
-
-                //System.out.println(getName() + " try acquire " + attackMsg.getSerials().toString());
-
                 ewoks.acquireEwoks(attackMsg.getSerials()); // Acquire the needed Ewoks for the attack
+
+                // Simulate the attack
                 Thread.sleep(attackMsg.getDuration()); // The attack - simulated by sleep
                 this.complete(attackMsg, true); // The attack is completed,
                                                       // need to resolve the related Future by the MessageBs
-                //System.out.println(getName() + " finished attack " + attackMsg.getDuration());
+
+                // Release Ewoks after attack
                 ewoks.releaseEwoks(attackMsg.getSerials()); // Release the Ewoks that used for the attack
+
+                // Update Diary Data
                 Diary.getInstance().AddAttack(); // Updating the attacks number in the diary
                 setFinished(); // Set the time the thread finished the attack
             }
