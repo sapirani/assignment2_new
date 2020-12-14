@@ -68,8 +68,8 @@ class MessageBusTest {
         {
             messageBus.subscribeEvent(AttackEvent.class , c3po); // C3PO subscribes to messages of type AttackEvent
 
-            //messageBus.sendEvent(deactivation); // R2D2 sends message of type DeactivationEvent
-            //messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sends broadcast (c3po is not subscribed to this type of messages)
+            messageBus.sendEvent(deactivation); // R2D2 sends message of type DeactivationEvent
+            messageBus.sendBroadcast(new TerminateBroadcast()); // One of the microServices sends broadcast (c3po is not subscribed to this type of messages)
             messageBus.sendEvent(attack); // Leia sends message of type AttackEvent
 
             receivedAttack = messageBus.awaitMessage(c3po); // C3PO should get the message that Leia sent
@@ -94,9 +94,9 @@ class MessageBusTest {
             messageBus.subscribeBroadcast(TerminateBroadcast.class , leia); // Leia subscribes to messages of type TerminateBroadcast
             messageBus.subscribeBroadcast(TerminateBroadcast.class, r2d2); // R2D2 subscribes to messages of type TerminateBroadcast
 
-            //messageBus.sendEvent(new AttackEvent(new Attack(new ArrayList<>(), 20))); // Leia sends message of type AttackEvent,
+            messageBus.sendEvent(new AttackEvent(new Attack(new ArrayList<>(), 20))); // Leia sends message of type AttackEvent,
                                                      // but there isn't any microService that subscribes for this type of messages.
-            //messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sent a broadcast message,
+            messageBus.sendBroadcast(new Broadcast() {}); // One of the microServices sent a broadcast message,
                                                           // The message is not of type TerminateBroadcast,
                                                           // so there isn't microService that subscribes to this type of messages
             messageBus.sendBroadcast(terminate); // Lando sends message of type TerminateBroadcast

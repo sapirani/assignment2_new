@@ -92,6 +92,9 @@ public class MessageBusImpl implements MessageBus
     public /*synchronized*/ void sendBroadcast(Broadcast b) {
         // to avoid removing from that list (in unregister) while sending broadcast to other microservices
 
+        if (!subscribeMicroservice.containsKey(b.getClass()))
+            return;
+
         //  insert broadcast to the queue of the right microservice
         for (MicroService microService : subscribeMicroservice.get(b.getClass())) {
             try {

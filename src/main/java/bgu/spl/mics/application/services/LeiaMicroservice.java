@@ -45,6 +45,15 @@ public class LeiaMicroservice extends MicroService
         } catch (InterruptedException e) {
             e.printStackTrace();
         }*/
+        // need to subscribe to broadcast msg
+
+        subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {
+            @Override
+            public void call(TerminateBroadcast terminateMsg)
+            {
+                terminate();
+            }
+        });
 
         LatchSingleton.getInstance().countDown();
         try {
@@ -70,15 +79,6 @@ public class LeiaMicroservice extends MicroService
 
             //System.out.println(this.getName() + " after sending attack " + event.getDuration());
         }
-
-        // need to subscribe to broadcast msg
-        subscribeBroadcast(TerminateBroadcast.class, new Callback<TerminateBroadcast>() {
-            @Override
-            public void call(TerminateBroadcast terminateMsg)
-            {
-                terminate();
-            }
-        });
 
         waitUntilFinishAllAttacks();
         this.sendEvent(new DeactivationEvent());
